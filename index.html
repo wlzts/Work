@@ -1,0 +1,2403 @@
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作记录 | WorkLog</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- EasyMDE (Markdown Editor) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  
+  <!-- Highlight.js for code highlighting -->
+  <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
+  
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1E88E5',
+            secondary: '#64B5F6',
+            dark: '#263238',
+            light: '#ECEFF1',
+            accent: '#0D47A1',
+            success: '#4CAF50',
+            warning: '#FF9800',
+            error: '#F44336'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .transition-all-300 {
+        transition: all 0.3s ease;
+      }
+      .scrollbar-thin {
+        scrollbar-width: thin;
+      }
+      .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .scrollbar-thin::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+      }
+      .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    }
+  </style>
+  
+  <style>
+    /* Custom styles */
+    .app-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .main-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+    
+    .sidebar-collapsed {
+      transform: translateX(-100%);
+    }
+    
+    .editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .editor-toolbar a.active, 
+    .editor-toolbar a:hover {
+      background-color: rgba(30, 136, 229, 0.1);
+      border-color: #1E88E5;
+    }
+    
+    .CodeMirror {
+      height: 100%;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px;
+    }
+    
+    .EasyMDEContainer {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .EasyMDEContainer .CodeMirror {
+      flex: 1;
+    }
+    
+    .right-panel {
+      width: 320px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+    
+    .right-panel-collapsed {
+      transform: translateX(100%);
+    }
+    
+    .entry-item {
+      transition: all 0.2s ease;
+    }
+    
+    .entry-item:hover {
+      background-color: rgba(30, 136, 229, 0.05);
+    }
+    
+    .entry-item.active {
+      background-color: rgba(30, 136, 229, 0.1);
+      border-left: 3px solid #1E88E5;
+    }
+    
+    .project-item {
+      transition: all 0.2s ease;
+    }
+    
+    .project-item:hover {
+      background-color: rgba(30, 136, 229, 0.05);
+    }
+    
+    .project-item.active {
+      background-color: rgba(30, 136, 229, 0.1);
+      border-left: 3px solid;
+    }
+    
+    .version-item {
+      transition: all 0.2s ease;
+    }
+    
+    .version-item:hover {
+      background-color: rgba(30, 136, 229, 0.05);
+    }
+    
+    .version-item.active {
+      background-color: rgba(30, 136, 229, 0.1);
+      border-left: 3px solid #1E88E5;
+    }
+    
+    .tag-item {
+      transition: all 0.2s ease;
+    }
+    
+    .tag-item:hover {
+      background-color: rgba(30, 136, 229, 0.1);
+    }
+    
+    .tag-item.active {
+      background-color: rgba(30, 136, 229, 0.2);
+    }
+    
+    /* Animation classes */
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .slide-in {
+      animation: slideIn 0.3s ease-in-out;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .sidebar {
+        position: absolute;
+        z-index: 10;
+        height: calc(100vh - 64px);
+        background-color: white;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      }
+      
+      .right-panel {
+        position: absolute;
+        right: 0;
+        z-index: 10;
+        height: calc(100vh - 64px);
+        background-color: white;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .sidebar {
+        width: 100%;
+      }
+      
+      .right-panel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="app-container">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 shadow-sm">
+      <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <button id="toggle-sidebar" class="lg:hidden text-gray-600 hover:text-primary focus:outline-none">
+            <i class="fa fa-bars text-xl"></i>
+          </button>
+          
+          <div class="flex items-center space-x-2">
+            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/bb612492797b410081fcb52fff57b02b~tplv-a9rns2rl98-image.image?rcl=202512111415382DABBDA9C23C937C67B6&amp;rk3s=8e244e95&amp;rrcfp=f06b921b&amp;x-expires=1768025778&amp;x-signature=DsllztnLdb5mHYnN4wWLE4Wbd4w%3D" alt="WorkLog Logo" class="h-8 w-8">
+            <h1 class="text-xl font-bold text-primary">WorkLog</h1>
+          </div>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="hidden md:flex flex-1 max-w-md mx-4">
+          <div class="relative w-full">
+            <input type="text" id="search-input" placeholder="搜索记录..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            <span class="absolute left-3 top-2.5 text-gray-400">
+              <i class="fa fa-search"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex items-center space-x-3">
+          <button id="sync-status-btn" class="hidden sm:flex items-center space-x-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-all-300">
+            <i id="sync-status-icon" class="fa fa-cloud"></i>
+            <span id="sync-status-text">未同步</span>
+          </button>
+          
+          <button id="new-entry-btn" class="hidden sm:flex items-center space-x-1 px-3 py-1.5 bg-primary text-white rounded-md hover:bg-accent transition-all-300">
+            <i class="fa fa-plus"></i>
+            <span>新建</span>
+          </button>
+          
+          <button id="new-entry-btn-mobile" class="sm:hidden text-primary hover:text-accent focus:outline-none">
+            <i class="fa fa-plus text-xl"></i>
+          </button>
+          
+          <div class="relative">
+            <button id="user-menu-btn" class="flex items-center space-x-1 focus:outline-none">
+              <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                <i class="fa fa-user"></i>
+              </div>
+            </button>
+            
+            <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+              <a href="#" id="export-data-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <i class="fa fa-download mr-2"></i>导出数据
+              </a>
+              <a href="#" id="import-data-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <i class="fa fa-upload mr-2"></i>导入数据
+              </a>
+              <a href="#" id="settings-btn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <i class="fa fa-cog mr-2"></i>设置
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Left Sidebar -->
+      <aside id="sidebar" class="sidebar bg-white border-r border-gray-200">
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800">项目</h2>
+            <button id="new-project-btn" class="text-primary hover:text-accent focus:outline-none">
+              <i class="fa fa-plus-circle"></i>
+            </button>
+          </div>
+          
+          <!-- Projects List -->
+          <div id="projects-list" class="space-y-1 mb-6">
+            <!-- Projects will be dynamically added here -->
+          </div>
+          
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800">标签</h2>
+          </div>
+          
+          <!-- Tags List -->
+          <div id="tags-list" class="flex flex-wrap gap-2 mb-6">
+            <!-- Tags will be dynamically added here -->
+          </div>
+          
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800">最近记录</h2>
+          </div>
+          
+          <!-- Recent Entries -->
+          <div id="recent-entries" class="space-y-1">
+            <!-- Recent entries will be dynamically added here -->
+          </div>
+        </div>
+      </aside>
+      
+      <!-- Editor Area -->
+      <main class="editor-container bg-white">
+        <div id="editor-header" class="p-4 border-b border-gray-200">
+          <input type="text" id="entry-title" placeholder="记录标题..." class="w-full text-xl font-semibold border-0 border-b-2 border-transparent focus:outline-none focus:border-primary pb-1">
+          
+          <div class="flex items-center justify-between mt-2 text-sm text-gray-500">
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center">
+                <span class="text-gray-500 mr-2">项目:</span>
+                <select id="entry-project" class="text-sm border-0 border-b border-gray-300 rounded-none focus:outline-none focus:border-primary">
+                  <option value="">选择项目</option>
+                  <!-- Projects will be dynamically added here -->
+                </select>
+              </div>
+              
+              <div class="flex items-center">
+                <span class="text-gray-500 mr-2">标签:</span>
+                <div id="entry-tags" class="flex flex-wrap gap-1">
+                  <!-- Tags will be dynamically added here -->
+                </div>
+                <button id="add-tag-btn" class="ml-1 text-primary hover:text-accent focus:outline-none">
+                  <i class="fa fa-plus-circle"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <span id="entry-date" class="text-gray-500"></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Markdown Editor -->
+        <div id="editor-wrapper" class="flex-1 overflow-hidden">
+          <textarea id="entry-content"></textarea>
+        </div>
+      </main>
+      
+      <!-- Right Panel (Version History) -->
+      <aside id="right-panel" class="right-panel bg-white border-l border-gray-200">
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-800">版本历史</h2>
+            <button id="toggle-right-panel" class="lg:hidden text-gray-600 hover:text-primary focus:outline-none">
+              <i class="fa fa-times"></i>
+            </button>
+          </div>
+          
+          <!-- Versions List -->
+          <div id="versions-list" class="space-y-2">
+            <!-- Versions will be dynamically added here -->
+          </div>
+          
+          <div class="mt-6">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">操作</h2>
+            
+            <div class="space-y-2">
+              <button id="save-entry-btn" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition-all-300">
+                <i class="fa fa-save"></i>
+                <span>保存记录</span>
+              </button>
+              
+              <button id="delete-entry-btn" class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md hover:bg-red-50 transition-all-300">
+                <i class="fa fa-trash"></i>
+                <span>删除记录</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  
+  <!-- Modals -->
+  <!-- New Project Modal -->
+  <div id="new-project-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">新建项目</h3>
+        <button class="close-modal text-gray-500 hover:text-gray-700 focus:outline-none">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <form id="new-project-form">
+        <div class="mb-4">
+          <label for="project-name" class="block text-sm font-medium text-gray-700 mb-1">项目名称</label>
+          <input type="text" id="project-name" required="" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+        </div>
+        
+        <div class="mb-4">
+          <label for="project-description" class="block text-sm font-medium text-gray-700 mb-1">项目描述</label>
+          <textarea id="project-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label for="project-color" class="block text-sm font-medium text-gray-700 mb-1">项目颜色</label>
+          <input type="color" id="project-color" value="#1E88E5" class="w-full h-10 border border-gray-300 rounded-md cursor-pointer">
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+          <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-all-300">
+            取消
+          </button>
+          <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition-all-300">
+            创建
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add Tag Modal -->
+  <div id="add-tag-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">添加标签</h3>
+        <button class="close-modal text-gray-500 hover:text-gray-700 focus:outline-none">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <form id="add-tag-form">
+        <div class="mb-4">
+          <label for="tag-name" class="block text-sm font-medium text-gray-700 mb-1">标签名称</label>
+          <input type="text" id="tag-name" required="" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+          <button type="button" class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-all-300">
+            取消
+          </button>
+          <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition-all-300">
+            添加
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
+      <div class="mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">确认删除</h3>
+        <p class="text-gray-600 mt-2">您确定要删除这条记录吗？此操作无法撤销。</p>
+      </div>
+      
+      <div class="flex justify-end space-x-3">
+        <button class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-all-300">
+          取消
+        </button>
+        <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all-300">
+          删除
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Import Data Modal -->
+  <div id="import-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">导入数据</h3>
+        <button class="close-modal text-gray-500 hover:text-gray-700 focus:outline-none">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="mb-4">
+        <p class="text-gray-600 mb-4">选择要导入的JSON文件。请注意，导入的数据将与现有数据合并。</p>
+        
+        <div class="border-2 border-dashed border-gray-300 rounded-md p-6 text-center">
+          <input type="file" id="import-file" accept=".json" class="hidden">
+          <label for="import-file" class="cursor-pointer">
+            <div class="space-y-2">
+              <i class="fa fa-cloud-upload text-4xl text-gray-400"></i>
+              <p class="text-sm text-gray-600">点击或拖拽文件到此处</p>
+              <p class="text-xs text-gray-500">支持 .json 格式</p>
+            </div>
+          </label>
+        </div>
+      </div>
+      
+      <div class="flex justify-end space-x-3">
+        <button class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-all-300">
+          取消
+        </button>
+        <button id="confirm-import-btn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition-all-300">
+          导入
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">设置</h3>
+        <button class="close-modal text-gray-500 hover:text-gray-700 focus:outline-none">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="flex items-center justify-between cursor-pointer">
+            <span class="text-sm font-medium text-gray-700">自动保存</span>
+            <div class="relative">
+              <input type="checkbox" id="auto-save" class="sr-only" checked="">
+              <div class="block bg-gray-300 w-14 h-8 rounded-full"></div>
+              <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+            </div>
+          </label>
+        </div>
+        
+        <div>
+          <label for="auto-save-interval" class="block text-sm font-medium text-gray-700 mb-1">自动保存间隔（秒）</label>
+          <input type="number" id="auto-save-interval" min="5" max="300" value="30" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+        </div>
+        
+        <div>
+          <label for="theme" class="block text-sm font-medium text-gray-700 mb-1">主题</label>
+          <select id="theme" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            <option value="light">浅色</option>
+            <option value="dark">深色</option>
+            <option value="system">跟随系统</option>
+          </select>
+        </div>
+        
+        <div class="pt-4 border-t border-gray-200">
+          <h4 class="text-sm font-medium text-gray-700 mb-3">GitHub 同步</h4>
+          
+          <div>
+            <label for="github-auto-sync" class="flex items-center justify-between cursor-pointer">
+              <span class="text-sm font-medium text-gray-700">自动同步</span>
+              <div class="relative">
+                <input type="checkbox" id="github-auto-sync" class="sr-only">
+                <div class="block bg-gray-300 w-14 h-8 rounded-full"></div>
+                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+              </div>
+            </label>
+          </div>
+          
+          <div class="mt-3">
+            <label for="github-username" class="block text-sm font-medium text-gray-700 mb-1">GitHub 用户名</label>
+            <input type="text" id="github-username" placeholder="GitHub 用户名" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+          </div>
+          
+          <div class="mt-3">
+            <label for="github-repo" class="block text-sm font-medium text-gray-700 mb-1">仓库名</label>
+            <input type="text" id="github-repo" placeholder="仓库名" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+          </div>
+          
+          <div class="mt-3">
+            <label for="github-token" class="block text-sm font-medium text-gray-700 mb-1">个人访问令牌</label>
+            <input type="password" id="github-token" placeholder="GitHub 个人访问令牌" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            <p class="mt-1 text-xs text-gray-500">
+              <a href="https://github.com/settings/tokens" target="_blank" class="text-primary hover:underline">创建个人访问令牌</a>（需要 repo 权限）
+            </p>
+          </div>
+          
+          <div class="mt-3">
+            <label for="github-file-path" class="block text-sm font-medium text-gray-700 mb-1">文件路径</label>
+            <input type="text" id="github-file-path" value="worklog-data.json" placeholder="数据文件路径" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex justify-end space-x-3 mt-6">
+        <button class="close-modal px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-all-300">
+          取消
+        </button>
+        <button id="save-settings-btn" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-accent transition-all-300">
+          保存
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 transform translate-y-10 opacity-0 transition-all duration-300 z-50 max-w-xs">
+    <div class="flex items-start">
+      <div id="toast-icon" class="flex-shrink-0 mr-3 text-primary">
+        <i class="fa fa-check-circle text-xl"></i>
+      </div>
+      <div class="flex-1">
+        <h4 id="toast-title" class="text-sm font-medium text-gray-800">成功</h4>
+        <p id="toast-message" class="text-sm text-gray-600 mt-1">操作已完成</p>
+      </div>
+      <button id="close-toast" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Backdrop for mobile -->
+  <div id="backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-5 hidden lg:hidden"></div>
+  
+  <!-- Hidden file input for import -->
+  <input type="file" id="hidden-import-file" accept=".json" class="hidden">
+  
+  <script>
+    // Data storage
+    const storage = {
+      // Get all data
+      getAllData() {
+        const data = localStorage.getItem('worklog-data');
+        if (!data) {
+          return this.getDefaultData();
+        }
+        return JSON.parse(data);
+      },
+      
+      // Save all data
+      saveAllData(data) {
+        localStorage.setItem('worklog-data', JSON.stringify(data));
+      },
+      
+      // Get default data structure
+      getDefaultData() {
+        return {
+          projects: [
+            {
+              id: 'default',
+              name: '默认项目',
+              description: '默认项目分类',
+              color: '#1E88E5',
+              createdAt: Date.now(),
+              updatedAt: Date.now()
+            }
+          ],
+          entries: [],
+          versions: [],
+          tags: [],
+          settings: {
+            autoSave: true,
+            autoSaveInterval: 30,
+            theme: 'light'
+          },
+          github: {
+            autoSync: false,
+            username: '',
+            repo: '',
+            token: '',
+            filePath: 'worklog-data.json',
+            lastSync: null
+          }
+        };
+      },
+      
+      // Export data
+      exportData() {
+        const data = this.getAllData();
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `worklog-export-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+      },
+      
+      // Import data
+      importData(jsonData) {
+        try {
+          const importedData = JSON.parse(jsonData);
+          const currentData = this.getAllData();
+          
+          // Merge projects (avoid duplicates)
+          const projectIds = new Set(currentData.projects.map(p => p.id));
+          importedData.projects.forEach(project => {
+            if (!projectIds.has(project.id)) {
+              currentData.projects.push(project);
+              projectIds.add(project.id);
+            }
+          });
+          
+          // Merge entries
+          const entryIds = new Set(currentData.entries.map(e => e.id));
+          importedData.entries.forEach(entry => {
+            if (!entryIds.has(entry.id)) {
+              currentData.entries.push(entry);
+              entryIds.add(entry.id);
+            }
+          });
+          
+          // Merge versions
+          const versionIds = new Set(currentData.versions.map(v => v.id));
+          importedData.versions.forEach(version => {
+            if (!versionIds.has(version.id)) {
+              currentData.versions.push(version);
+              versionIds.add(version.id);
+            }
+          });
+          
+          // Merge tags
+          const tagNames = new Set(currentData.tags);
+          importedData.tags.forEach(tag => {
+            if (!tagNames.has(tag)) {
+              currentData.tags.push(tag);
+              tagNames.add(tag);
+            }
+          });
+          
+          // Save merged data
+          this.saveAllData(currentData);
+          return true;
+        } catch (error) {
+          console.error('Error importing data:', error);
+          return false;
+        }
+      }
+    };
+    
+    // UI Controller
+    const ui = {
+      // Initialize the application
+      init() {
+        this.data = storage.getAllData();
+        this.currentEntry = null;
+        this.currentProject = null;
+        this.currentTag = null;
+        this.editor = null;
+        this.autoSaveTimer = null;
+        this.githubSyncTimer = null;
+        this.isSyncing = false;
+        
+        // Initialize UI components
+        this.initEditor();
+        this.renderProjects();
+        this.renderTags();
+        this.renderRecentEntries();
+        this.renderProjectSelect();
+        this.setupEventListeners();
+        
+        // Apply settings
+        this.applySettings();
+        
+        // Update sync status
+        this.updateSyncStatus();
+        
+        // Create a new entry if none exists
+        if (this.data.entries.length === 0) {
+          this.createNewEntry();
+        } else {
+          // Load the most recent entry
+          const recentEntry = this.data.entries.sort((a, b) => b.updatedAt - a.updatedAt)[0];
+          this.loadEntry(recentEntry.id);
+        }
+      },
+      
+      // Initialize the Markdown editor
+      initEditor() {
+        this.editor = new EasyMDE({
+          element: document.getElementById('entry-content'),
+          spellChecker: false,
+          autosave: {
+            enabled: false // We'll handle autosave manually
+          },
+          placeholder: '开始记录您的工作内容...',
+          toolbar: [
+            'bold', 'italic', 'heading', '|',
+            'code', 'quote', 'unordered-list', 'ordered-list', '|',
+            'link', 'image', 'table', '|',
+            'preview', 'side-by-side', 'fullscreen', '|',
+            'guide'
+          ],
+          renderingConfig: {
+            codeSyntaxHighlighting: true
+          }
+        });
+        
+        // Focus on editor when initialized
+        this.editor.codemirror.focus();
+      },
+      
+      // Setup event listeners
+      setupEventListeners() {
+        // Toggle sidebar
+        document.getElementById('toggle-sidebar').addEventListener('click', () => {
+          document.getElementById('sidebar').classList.toggle('sidebar-collapsed');
+          document.getElementById('backdrop').classList.toggle('hidden');
+        });
+        
+        // Toggle right panel
+        document.getElementById('toggle-right-panel').addEventListener('click', () => {
+          document.getElementById('right-panel').classList.toggle('right-panel-collapsed');
+          document.getElementById('backdrop').classList.toggle('hidden');
+        });
+        
+        // Backdrop click
+        document.getElementById('backdrop').addEventListener('click', () => {
+          document.getElementById('sidebar').classList.add('sidebar-collapsed');
+          document.getElementById('right-panel').classList.add('right-panel-collapsed');
+          document.getElementById('backdrop').classList.add('hidden');
+        });
+        
+        // User menu toggle
+        document.getElementById('user-menu-btn').addEventListener('click', () => {
+          document.getElementById('user-menu').classList.toggle('hidden');
+        });
+        
+        // Close user menu when clicking outside
+        document.addEventListener('click', (e) => {
+          const userMenu = document.getElementById('user-menu');
+          const userMenuBtn = document.getElementById('user-menu-btn');
+          if (!userMenuBtn.contains(e.target) && !userMenu.contains(e.target)) {
+            userMenu.classList.add('hidden');
+          }
+        });
+        
+        // New entry button
+        document.getElementById('new-entry-btn').addEventListener('click', () => {
+          this.createNewEntry();
+        });
+        
+        document.getElementById('new-entry-btn-mobile').addEventListener('click', () => {
+          this.createNewEntry();
+        });
+        
+        // New project button
+        document.getElementById('new-project-btn').addEventListener('click', () => {
+          document.getElementById('new-project-modal').classList.remove('hidden');
+        });
+        
+        // Add tag button
+        document.getElementById('add-tag-btn').addEventListener('click', () => {
+          document.getElementById('add-tag-modal').classList.remove('hidden');
+        });
+        
+        // Save entry button
+        document.getElementById('save-entry-btn').addEventListener('click', () => {
+          this.saveCurrentEntry();
+        });
+        
+        // Delete entry button
+        document.getElementById('delete-entry-btn').addEventListener('click', () => {
+          document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        });
+        
+        // Confirm delete button
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+          this.deleteCurrentEntry();
+          document.getElementById('delete-confirm-modal').classList.add('hidden');
+        });
+        
+        // Export data button
+        document.getElementById('export-data-btn').addEventListener('click', () => {
+          storage.exportData();
+          this.showToast('成功', '数据已导出');
+          document.getElementById('user-menu').classList.add('hidden');
+        });
+        
+        // Import data button
+        document.getElementById('import-data-btn').addEventListener('click', () => {
+          document.getElementById('import-modal').classList.remove('hidden');
+          document.getElementById('user-menu').classList.add('hidden');
+        });
+        
+        // Confirm import button
+        document.getElementById('confirm-import-btn').addEventListener('click', () => {
+          const fileInput = document.getElementById('import-file');
+          if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+              const success = storage.importData(e.target.result);
+              if (success) {
+                this.data = storage.getAllData();
+                this.renderProjects();
+                this.renderTags();
+                this.renderRecentEntries();
+                this.renderProjectSelect();
+                this.showToast('成功', '数据已导入');
+              } else {
+                this.showToast('错误', '导入失败，请检查文件格式', 'error');
+              }
+              document.getElementById('import-modal').classList.add('hidden');
+              fileInput.value = '';
+            };
+            
+            reader.readAsText(file);
+          } else {
+            this.showToast('提示', '请选择要导入的文件');
+          }
+        });
+        
+        // Settings button
+        document.getElementById('settings-btn').addEventListener('click', () => {
+          document.getElementById('settings-modal').classList.remove('hidden');
+          document.getElementById('user-menu').classList.add('hidden');
+          
+          // Load current settings
+          document.getElementById('auto-save').checked = this.data.settings.autoSave;
+          document.getElementById('auto-save-interval').value = this.data.settings.autoSaveInterval;
+          document.getElementById('theme').value = this.data.settings.theme;
+          
+          // Load GitHub settings
+          document.getElementById('github-auto-sync').checked = this.data.github.autoSync;
+          document.getElementById('github-username').value = this.data.github.username;
+          document.getElementById('github-repo').value = this.data.github.repo;
+          document.getElementById('github-token').value = this.data.github.token;
+          document.getElementById('github-file-path').value = this.data.github.filePath;
+          
+          // Update toggle switches
+          this.updateToggleSwitch();
+          this.updateGithubToggleSwitch();
+        });
+        
+        // Save settings button
+        document.getElementById('save-settings-btn').addEventListener('click', () => {
+          this.data.settings.autoSave = document.getElementById('auto-save').checked;
+          this.data.settings.autoSaveInterval = parseInt(document.getElementById('auto-save-interval').value);
+          this.data.settings.theme = document.getElementById('theme').value;
+          
+          // Save GitHub settings
+          this.data.github.autoSync = document.getElementById('github-auto-sync').checked;
+          this.data.github.username = document.getElementById('github-username').value;
+          this.data.github.repo = document.getElementById('github-repo').value;
+          this.data.github.token = document.getElementById('github-token').value;
+          this.data.github.filePath = document.getElementById('github-file-path').value;
+          
+          storage.saveAllData(this.data);
+          this.applySettings();
+          this.showToast('成功', '设置已保存');
+          document.getElementById('settings-modal').classList.add('hidden');
+          
+          // Try to sync with GitHub if settings changed
+          if (this.data.github.autoSync && this.isGithubConfigured()) {
+            this.startGithubAutoSync();
+            this.syncWithGithub();
+          } else {
+            this.stopGithubAutoSync();
+          }
+        });
+        
+        // Auto-save toggle
+        document.getElementById('auto-save').addEventListener('change', () => {
+          this.updateToggleSwitch();
+        });
+        
+        // GitHub auto-sync toggle
+        document.getElementById('github-auto-sync').addEventListener('change', () => {
+          this.updateGithubToggleSwitch();
+        });
+        
+        // Sync status button
+        document.getElementById('sync-status-btn').addEventListener('click', () => {
+          if (!this.isSyncing) {
+            this.syncWithGithub();
+          }
+        });
+        
+        // Close toast button
+        document.getElementById('close-toast').addEventListener('click', () => {
+          this.hideToast();
+        });
+        
+        // Close modals when clicking close button
+        document.querySelectorAll('.close-modal').forEach(button => {
+          button.addEventListener('click', () => {
+            document.querySelectorAll('.fixed.inset-0.bg-black.bg-opacity-50').forEach(modal => {
+              modal.classList.add('hidden');
+            });
+          });
+        });
+        
+        // New project form submission
+        document.getElementById('new-project-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          
+          const name = document.getElementById('project-name').value;
+          const description = document.getElementById('project-description').value;
+          const color = document.getElementById('project-color').value;
+          
+          this.createNewProject(name, description, color);
+          document.getElementById('new-project-modal').classList.add('hidden');
+          document.getElementById('new-project-form').reset();
+        });
+        
+        // Add tag form submission
+        document.getElementById('add-tag-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          
+          const name = document.getElementById('tag-name').value;
+          
+          if (!this.data.tags.includes(name)) {
+            this.data.tags.push(name);
+            storage.saveAllData(this.data);
+            this.renderTags();
+          }
+          
+          // Add tag to current entry if one is selected
+          if (this.currentEntry) {
+            this.addTagToEntry(name);
+          }
+          
+          document.getElementById('add-tag-modal').classList.add('hidden');
+          document.getElementById('add-tag-form').reset();
+        });
+        
+        // Entry title change
+        document.getElementById('entry-title').addEventListener('input', () => {
+          if (this.currentEntry) {
+            this.currentEntry.title = document.getElementById('entry-title').value;
+            this.scheduleAutoSave();
+          }
+        });
+        
+        // Entry project change
+        document.getElementById('entry-project').addEventListener('change', () => {
+          if (this.currentEntry) {
+            this.currentEntry.projectId = document.getElementById('entry-project').value;
+            this.scheduleAutoSave();
+          }
+        });
+        
+        // Editor content change
+        this.editor.codemirror.on('change', () => {
+          if (this.currentEntry) {
+            this.scheduleAutoSave();
+          }
+        });
+        
+        // Search input
+        document.getElementById('search-input').addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase();
+          this.filterEntries(query);
+        });
+      },
+      
+      // Update toggle switch UI
+      updateToggleSwitch() {
+        const toggle = document.getElementById('auto-save');
+        const dot = toggle.nextElementSibling.nextElementSibling;
+        
+        if (toggle.checked) {
+          toggle.nextElementSibling.classList.remove('bg-gray-300');
+          toggle.nextElementSibling.classList.add('bg-primary');
+          dot.classList.remove('left-1');
+          dot.classList.add('left-7');
+        } else {
+          toggle.nextElementSibling.classList.remove('bg-primary');
+          toggle.nextElementSibling.classList.add('bg-gray-300');
+          dot.classList.remove('left-7');
+          dot.classList.add('left-1');
+        }
+      },
+      
+      // Update GitHub toggle switch UI
+      updateGithubToggleSwitch() {
+        const toggle = document.getElementById('github-auto-sync');
+        const dot = toggle.nextElementSibling.nextElementSibling;
+        
+        if (toggle.checked) {
+          toggle.nextElementSibling.classList.remove('bg-gray-300');
+          toggle.nextElementSibling.classList.add('bg-primary');
+          dot.classList.remove('left-1');
+          dot.classList.add('left-7');
+        } else {
+          toggle.nextElementSibling.classList.remove('bg-primary');
+          toggle.nextElementSibling.classList.add('bg-gray-300');
+          dot.classList.remove('left-7');
+          dot.classList.add('left-1');
+        }
+      },
+      
+      // Apply settings
+      applySettings() {
+        // Auto-save
+        if (this.data.settings.autoSave) {
+          this.startAutoSave();
+        } else {
+          this.stopAutoSave();
+        }
+        
+        // GitHub auto-sync
+        if (this.data.github.autoSync && this.isGithubConfigured()) {
+          this.startGithubAutoSync();
+        } else {
+          this.stopGithubAutoSync();
+        }
+        
+        // Theme
+        this.applyTheme(this.data.settings.theme);
+      },
+      
+      // Apply theme
+      applyTheme(theme) {
+        const root = document.documentElement;
+        
+        if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          // Apply dark theme
+          root.classList.add('dark-theme');
+          document.body.classList.add('bg-gray-900', 'text-gray-100');
+          document.querySelectorAll('.bg-white').forEach(el => {
+            el.classList.remove('bg-white');
+            el.classList.add('bg-gray-800');
+          });
+          document.querySelectorAll('.border-gray-200').forEach(el => {
+            el.classList.remove('border-gray-200');
+            el.classList.add('border-gray-700');
+          });
+          document.querySelectorAll('.text-gray-800').forEach(el => {
+            el.classList.remove('text-gray-800');
+            el.classList.add('text-gray-200');
+          });
+          document.querySelectorAll('.text-gray-600').forEach(el => {
+            el.classList.remove('text-gray-600');
+            el.classList.add('text-gray-400');
+          });
+          document.querySelectorAll('.text-gray-500').forEach(el => {
+            el.classList.remove('text-gray-500');
+            el.classList.add('text-gray-400');
+          });
+          document.querySelectorAll('.bg-gray-50').forEach(el => {
+            el.classList.remove('bg-gray-50');
+            el.classList.add('bg-gray-900');
+          });
+          document.querySelectorAll('.bg-gray-100').forEach(el => {
+            el.classList.remove('bg-gray-100');
+            el.classList.add('bg-gray-700');
+          });
+          document.querySelectorAll('.hover:bg-gray-100').forEach(el => {
+            el.classList.remove('hover:bg-gray-100');
+            el.classList.add('hover:bg-gray-700');
+          });
+          document.querySelectorAll('.shadow-sm').forEach(el => {
+            el.classList.remove('shadow-sm');
+            el.classList.add('shadow-gray-900/20');
+          });
+          document.querySelectorAll('.shadow-lg').forEach(el => {
+            el.classList.remove('shadow-lg');
+            el.classList.add('shadow-gray-900/30');
+          });
+          document.querySelectorAll('.border-gray-300').forEach(el => {
+            el.classList.remove('border-gray-300');
+            el.classList.add('border-gray-600');
+          });
+          document.querySelectorAll('.focus:ring-primary').forEach(el => {
+            el.classList.remove('focus:ring-primary');
+            el.classList.add('focus:ring-blue-500');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-red-50').forEach(el => {
+            el.classList.remove('bg-red-50');
+            el.classList.add('bg-red-900/20');
+          });
+          document.querySelectorAll('.bg-red-600').forEach(el => {
+            el.classList.remove('bg-red-600');
+            el.classList.add('bg-red-700');
+          });
+          document.querySelectorAll('.hover:bg-red-700').forEach(el => {
+            el.classList.remove('hover:bg-red-700');
+            el.classList.add('hover:bg-red-800');
+          });
+          document.querySelectorAll('.text-red-600').forEach(el => {
+            el.classList.remove('text-red-600');
+            el.classList.add('text-red-400');
+          });
+          document.querySelectorAll('.border-red-600').forEach(el => {
+            el.classList.remove('border-red-600');
+            el.classList.add('border-red-500');
+          });
+          document.querySelectorAll('.hover:bg-red-50').forEach(el => {
+            el.classList.remove('hover:bg-red-50');
+            el.classList.add('hover:bg-red-900/20');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-300').forEach(el => {
+            el.classList.remove('bg-gray-300');
+            el.classList.add('bg-gray-600');
+          });
+          
+          // Update CodeMirror theme
+          if (this.editor) {
+            this.editor.codemirror.setOption('theme', 'dracula');
+          }
+        } else {
+          // Apply light theme
+          root.classList.remove('dark-theme');
+          document.body.classList.remove('bg-gray-900', 'text-gray-100');
+          document.body.classList.add('bg-gray-50', 'text-gray-800');
+          document.querySelectorAll('.bg-gray-800').forEach(el => {
+            el.classList.remove('bg-gray-800');
+            el.classList.add('bg-white');
+          });
+          document.querySelectorAll('.border-gray-700').forEach(el => {
+            el.classList.remove('border-gray-700');
+            el.classList.add('border-gray-200');
+          });
+          document.querySelectorAll('.text-gray-200').forEach(el => {
+            el.classList.remove('text-gray-200');
+            el.classList.add('text-gray-800');
+          });
+          document.querySelectorAll('.text-gray-400').forEach(el => {
+            el.classList.remove('text-gray-400');
+            el.classList.add('text-gray-600');
+          });
+          document.querySelectorAll('.bg-gray-900').forEach(el => {
+            el.classList.remove('bg-gray-900');
+            el.classList.add('bg-gray-50');
+          });
+          document.querySelectorAll('.bg-gray-700').forEach(el => {
+            el.classList.remove('bg-gray-700');
+            el.classList.add('bg-gray-100');
+          });
+          document.querySelectorAll('.hover:bg-gray-700').forEach(el => {
+            el.classList.remove('hover:bg-gray-700');
+            el.classList.add('hover:bg-gray-100');
+          });
+          document.querySelectorAll('.shadow-gray-900/20').forEach(el => {
+            el.classList.remove('shadow-gray-900/20');
+            el.classList.add('shadow-sm');
+          });
+          document.querySelectorAll('.shadow-gray-900/30').forEach(el => {
+            el.classList.remove('shadow-gray-900/30');
+            el.classList.add('shadow-lg');
+          });
+          document.querySelectorAll('.border-gray-600').forEach(el => {
+            el.classList.remove('border-gray-600');
+            el.classList.add('border-gray-300');
+          });
+          document.querySelectorAll('.focus:ring-blue-500').forEach(el => {
+            el.classList.remove('focus:ring-blue-500');
+            el.classList.add('focus:ring-primary');
+          });
+          document.querySelectorAll('.bg-gray-600').forEach(el => {
+            el.classList.remove('bg-gray-600');
+            el.classList.add('bg-gray-300');
+          });
+          document.querySelectorAll('.bg-red-900/20').forEach(el => {
+            el.classList.remove('bg-red-900/20');
+            el.classList.add('bg-red-50');
+          });
+          document.querySelectorAll('.bg-red-700').forEach(el => {
+            el.classList.remove('bg-red-700');
+            el.classList.add('bg-red-600');
+          });
+          document.querySelectorAll('.hover:bg-red-800').forEach(el => {
+            el.classList.remove('hover:bg-red-800');
+            el.classList.add('hover:bg-red-700');
+          });
+          document.querySelectorAll('.text-red-400').forEach(el => {
+            el.classList.remove('text-red-400');
+            el.classList.add('text-red-600');
+          });
+          document.querySelectorAll('.border-red-500').forEach(el => {
+            el.classList.remove('border-red-500');
+            el.classList.add('border-red-600');
+          });
+          document.querySelectorAll('.hover:bg-red-900/20').forEach(el => {
+            el.classList.remove('hover:bg-red-900/20');
+            el.classList.add('hover:bg-red-50');
+          });
+          
+          // Update CodeMirror theme
+          if (this.editor) {
+            this.editor.codemirror.setOption('theme', 'default');
+          }
+        }
+      },
+      
+      // Start auto-save
+      startAutoSave() {
+        this.stopAutoSave(); // Clear any existing timer
+        
+        if (this.data.settings.autoSave) {
+          this.autoSaveTimer = setInterval(() => {
+            if (this.currentEntry) {
+              this.saveCurrentEntry(true);
+            }
+          }, this.data.settings.autoSaveInterval * 1000);
+        }
+      },
+      
+      // Stop auto-save
+      stopAutoSave() {
+        if (this.autoSaveTimer) {
+          clearInterval(this.autoSaveTimer);
+          this.autoSaveTimer = null;
+        }
+      },
+      
+      // Start GitHub auto-sync
+      startGithubAutoSync() {
+        this.stopGithubAutoSync(); // Clear any existing timer
+        
+        if (this.data.github.autoSync && this.isGithubConfigured()) {
+          // Sync every 5 minutes
+          this.githubSyncTimer = setInterval(() => {
+            this.syncWithGithub();
+          }, 5 * 60 * 1000);
+        }
+      },
+      
+      // Stop GitHub auto-sync
+      stopGithubAutoSync() {
+        if (this.githubSyncTimer) {
+          clearInterval(this.githubSyncTimer);
+          this.githubSyncTimer = null;
+        }
+      },
+      
+      // Check if GitHub is configured
+      isGithubConfigured() {
+        return this.data.github.username && 
+               this.data.github.repo && 
+               this.data.github.token && 
+               this.data.github.filePath;
+      },
+      
+      // Sync data with GitHub
+      async syncWithGithub() {
+        if (!this.isGithubConfigured() || this.isSyncing) {
+          return;
+        }
+        
+        this.isSyncing = true;
+        this.updateSyncStatus('syncing');
+        
+        try {
+          // First, try to get the current file from GitHub
+          const githubData = await this.fetchGithubFile();
+          
+          if (githubData) {
+            // Merge with local data
+            const mergedData = this.mergeData(this.data, githubData);
+            
+            // Save merged data locally
+            this.data = mergedData;
+            storage.saveAllData(mergedData);
+            
+            // Refresh UI
+            this.renderProjects();
+            this.renderTags();
+            this.renderRecentEntries();
+            this.renderProjectSelect();
+            
+            if (this.currentEntry) {
+              this.loadEntry(this.currentEntry.id);
+            }
+          }
+          
+          // Upload current data to GitHub
+          await this.uploadToGithub();
+          
+          this.data.github.lastSync = Date.now();
+          storage.saveAllData(this.data);
+          
+          this.updateSyncStatus('synced');
+          this.showToast('成功', '已与GitHub同步');
+        } catch (error) {
+          console.error('GitHub sync error:', error);
+          this.updateSyncStatus('error');
+          this.showToast('错误', 'GitHub同步失败', 'error');
+        } finally {
+          this.isSyncing = false;
+        }
+      },
+      
+      // Fetch file from GitHub
+      async fetchGithubFile() {
+        const { username, repo, token, filePath } = this.data.github;
+        const url = `https://api.github.com/repos/${username}/${repo}/contents/${filePath}`;
+        
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `token ${token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+          
+          if (response.status === 404) {
+            // File doesn't exist yet
+            return null;
+          }
+          
+          if (!response.ok) {
+            throw new Error(`GitHub API error: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          const content = atob(data.content);
+          return JSON.parse(content);
+        } catch (error) {
+          console.error('Error fetching from GitHub:', error);
+          throw error;
+        }
+      },
+      
+      // Upload data to GitHub
+      async uploadToGithub() {
+        const { username, repo, token, filePath } = this.data.github;
+        const url = `https://api.github.com/repos/${username}/${repo}/contents/${filePath}`;
+        
+        try {
+          // First, check if the file exists
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `token ${token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+          
+          let sha = null;
+          if (response.ok) {
+            const data = await response.json();
+            sha = data.sha;
+          }
+          
+          const content = btoa(JSON.stringify(this.data, null, 2));
+          const payload = {
+            message: `Sync worklog data - ${new Date().toISOString()}`,
+            content: content
+          };
+          
+          if (sha) {
+            payload.sha = sha;
+          }
+          
+          const uploadResponse = await fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          
+          if (!uploadResponse.ok) {
+            throw new Error(`GitHub API error: ${uploadResponse.status}`);
+          }
+        } catch (error) {
+          console.error('Error uploading to GitHub:', error);
+          throw error;
+        }
+      },
+      
+      // Merge local and GitHub data
+      mergeData(localData, githubData) {
+        const mergedData = { ...localData };
+        
+        // Merge projects
+        const projectMap = new Map();
+        mergedData.projects.forEach(project => projectMap.set(project.id, project));
+        
+        githubData.projects.forEach(project => {
+          if (!projectMap.has(project.id)) {
+            projectMap.set(project.id, project);
+          } else {
+            // Use the newer project if timestamps differ
+            const existingProject = projectMap.get(project.id);
+            if (project.updatedAt > existingProject.updatedAt) {
+              projectMap.set(project.id, project);
+            }
+          }
+        });
+        
+        mergedData.projects = Array.from(projectMap.values());
+        
+        // Merge entries
+        const entryMap = new Map();
+        mergedData.entries.forEach(entry => entryMap.set(entry.id, entry));
+        
+        githubData.entries.forEach(entry => {
+          if (!entryMap.has(entry.id)) {
+            entryMap.set(entry.id, entry);
+          } else {
+            // Use the newer entry if timestamps differ
+            const existingEntry = entryMap.get(entry.id);
+            if (entry.updatedAt > existingEntry.updatedAt) {
+              entryMap.set(entry.id, entry);
+            }
+          }
+        });
+        
+        mergedData.entries = Array.from(entryMap.values());
+        
+        // Merge versions
+        const versionMap = new Map();
+        mergedData.versions.forEach(version => versionMap.set(version.id, version));
+        
+        githubData.versions.forEach(version => {
+          if (!versionMap.has(version.id)) {
+            versionMap.set(version.id, version);
+          }
+        });
+        
+        mergedData.versions = Array.from(versionMap.values());
+        
+        // Merge tags
+        const tagSet = new Set(mergedData.tags);
+        githubData.tags.forEach(tag => tagSet.add(tag));
+        mergedData.tags = Array.from(tagSet);
+        
+        // Keep local settings
+        mergedData.settings = localData.settings;
+        
+        // Keep local GitHub config
+        mergedData.github = localData.github;
+        
+        return mergedData;
+      },
+      
+      // Update sync status UI
+      updateSyncStatus(status = null) {
+        const syncBtn = document.getElementById('sync-status-btn');
+        const syncIcon = document.getElementById('sync-status-icon');
+        const syncText = document.getElementById('sync-status-text');
+        
+        if (!syncBtn) return;
+        
+        if (status === 'syncing') {
+          syncBtn.classList.remove('bg-gray-100', 'text-gray-700', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+          syncBtn.classList.add('bg-blue-100', 'text-blue-700');
+          syncIcon.className = 'fa fa-spinner fa-spin';
+          syncText.textContent = '同步中...';
+          return;
+        }
+        
+        if (status === 'synced') {
+          syncBtn.classList.remove('bg-gray-100', 'text-gray-700', 'bg-blue-100', 'text-blue-700', 'bg-red-100', 'text-red-700');
+          syncBtn.classList.add('bg-green-100', 'text-green-700');
+          syncIcon.className = 'fa fa-check-circle';
+          syncText.textContent = '已同步';
+          return;
+        }
+        
+        if (status === 'error') {
+          syncBtn.classList.remove('bg-gray-100', 'text-gray-700', 'bg-blue-100', 'text-blue-700', 'bg-green-100', 'text-green-700');
+          syncBtn.classList.add('bg-red-100', 'text-red-700');
+          syncIcon.className = 'fa fa-exclamation-circle';
+          syncText.textContent = '同步失败';
+          return;
+        }
+        
+        // Default status
+        if (this.data.github.lastSync) {
+          const lastSync = new Date(this.data.github.lastSync);
+          const now = new Date();
+          const diffMinutes = Math.floor((now - lastSync) / (1000 * 60));
+          
+          if (diffMinutes < 5) {
+            syncBtn.classList.remove('bg-gray-100', 'text-gray-700', 'bg-blue-100', 'text-blue-700', 'bg-red-100', 'text-red-700');
+            syncBtn.classList.add('bg-green-100', 'text-green-700');
+            syncIcon.className = 'fa fa-check-circle';
+            syncText.textContent = '已同步';
+          } else {
+            syncBtn.classList.remove('bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700', 'bg-red-100', 'text-red-700');
+            syncBtn.classList.add('bg-gray-100', 'text-gray-700');
+            syncIcon.className = 'fa fa-clock-o';
+            syncText.textContent = `${diffMinutes}分钟前`;
+          }
+        } else {
+          syncBtn.classList.remove('bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700', 'bg-red-100', 'text-red-700');
+          syncBtn.classList.add('bg-gray-100', 'text-gray-700');
+          syncIcon.className = 'fa fa-cloud';
+          syncText.textContent = '未同步';
+        }
+      },
+      
+      // Schedule auto-save after a short delay
+      scheduleAutoSave() {
+        if (!this.data.settings.autoSave) return;
+        
+        // Clear any existing timer
+        if (this.autoSaveTimer) {
+          clearTimeout(this.autoSaveTimer);
+        }
+        
+        // Set a new timer
+        this.autoSaveTimer = setTimeout(() => {
+          if (this.currentEntry) {
+            this.saveCurrentEntry(true);
+          }
+        }, 1000); // Save after 1 second of inactivity
+      },
+      
+      // Render projects list
+      renderProjects() {
+        const projectsList = document.getElementById('projects-list');
+        projectsList.innerHTML = '';
+        
+        this.data.projects.forEach(project => {
+          const projectItem = document.createElement('div');
+          projectItem.className = `project-item pl-3 pr-2 py-2 rounded-md cursor-pointer ${this.currentProject === project.id ? 'active' : ''}`;
+          projectItem.style.borderLeftColor = project.color;
+          projectItem.dataset.projectId = project.id;
+          
+          projectItem.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full mr-2" style="background-color: ${project.color}"></div>
+                <span class="text-sm font-medium">${project.name}</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button class="edit-project-btn text-gray-400 hover:text-primary focus:outline-none" data-project-id="${project.id}">
+                  <i class="fa fa-pencil"></i>
+                </button>
+                <button class="delete-project-btn text-gray-400 hover:text-red-500 focus:outline-none" data-project-id="${project.id}">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `;
+          
+          projectItem.addEventListener('click', (e) => {
+            // Don't trigger if clicking on buttons
+            if (e.target.closest('.edit-project-btn') || e.target.closest('.delete-project-btn')) {
+              return;
+            }
+            
+            this.selectProject(project.id);
+          });
+          
+          projectsList.appendChild(projectItem);
+        });
+        
+        // Add event listeners to project buttons
+        document.querySelectorAll('.edit-project-btn').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const projectId = button.dataset.projectId;
+            this.editProject(projectId);
+          });
+        });
+        
+        document.querySelectorAll('.delete-project-btn').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const projectId = button.dataset.projectId;
+            this.deleteProject(projectId);
+          });
+        });
+      },
+      
+      // Render tags list
+      renderTags() {
+        const tagsList = document.getElementById('tags-list');
+        tagsList.innerHTML = '';
+        
+        this.data.tags.forEach(tag => {
+          const tagItem = document.createElement('div');
+          tagItem.className = `tag-item px-2 py-1 rounded-full text-xs bg-gray-100 cursor-pointer ${this.currentTag === tag ? 'active' : ''}`;
+          tagItem.dataset.tag = tag;
+          tagItem.textContent = tag;
+          
+          tagItem.addEventListener('click', () => {
+            this.selectTag(tag);
+          });
+          
+          tagsList.appendChild(tagItem);
+        });
+      },
+      
+      // Render recent entries
+      renderRecentEntries() {
+        const recentEntriesList = document.getElementById('recent-entries');
+        recentEntriesList.innerHTML = '';
+        
+        // Sort entries by updated date (most recent first)
+        const sortedEntries = [...this.data.entries].sort((a, b) => b.updatedAt - a.updatedAt);
+        
+        // Take only the 10 most recent entries
+        const recentEntries = sortedEntries.slice(0, 10);
+        
+        recentEntries.forEach(entry => {
+          const entryItem = document.createElement('div');
+          entryItem.className = `entry-item pl-3 pr-2 py-2 rounded-md cursor-pointer ${this.currentEntry && this.currentEntry.id === entry.id ? 'active' : ''}`;
+          entryItem.dataset.entryId = entry.id;
+          
+          // Get project name if available
+          const project = this.data.projects.find(p => p.id === entry.projectId);
+          const projectName = project ? project.name : '无项目';
+          
+          entryItem.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-sm font-medium truncate">${entry.title || '无标题'}</h4>
+                <div class="flex items-center mt-1">
+                  <span class="text-xs text-gray-500">${new Date(entry.updatedAt).toLocaleDateString()}</span>
+                  ${project ? `<span class="text-xs text-gray-500 mx-1">•</span>
+                  <span class="text-xs text-gray-500">${projectName}</span>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+          
+          entryItem.addEventListener('click', () => {
+            this.loadEntry(entry.id);
+          });
+          
+          recentEntriesList.appendChild(entryItem);
+        });
+      },
+      
+      // Render project select options
+      renderProjectSelect() {
+        const projectSelect = document.getElementById('entry-project');
+        projectSelect.innerHTML = '<option value="">选择项目</option>';
+        
+        this.data.projects.forEach(project => {
+          const option = document.createElement('option');
+          option.value = project.id;
+          option.textContent = project.name;
+          
+          projectSelect.appendChild(option);
+        });
+        
+        // Set selected project if current entry has one
+        if (this.currentEntry && this.currentEntry.projectId) {
+          projectSelect.value = this.currentEntry.projectId;
+        }
+      },
+      
+      // Render entry tags
+      renderEntryTags() {
+        const entryTagsContainer = document.getElementById('entry-tags');
+        entryTagsContainer.innerHTML = '';
+        
+        if (!this.currentEntry || !this.currentEntry.tags) return;
+        
+        this.currentEntry.tags.forEach(tag => {
+          const tagElement = document.createElement('div');
+          tagElement.className = 'tag-item px-2 py-0.5 rounded-full text-xs bg-gray-100 flex items-center';
+          tagElement.innerHTML = `
+            <span>${tag}</span>
+            <button class="remove-tag-btn ml-1 text-gray-400 hover:text-red-500 focus:outline-none">
+              <i class="fa fa-times"></i>
+            </button>
+          `;
+          
+          // Add event listener to remove tag button
+          const removeButton = tagElement.querySelector('.remove-tag-btn');
+          removeButton.addEventListener('click', () => {
+            this.removeTagFromEntry(tag);
+          });
+          
+          entryTagsContainer.appendChild(tagElement);
+        });
+      },
+      
+      // Render versions list
+      renderVersions() {
+        const versionsList = document.getElementById('versions-list');
+        versionsList.innerHTML = '';
+        
+        if (!this.currentEntry) return;
+        
+        // Get versions for current entry
+        const versions = this.data.versions.filter(v => v.entryId === this.currentEntry.id);
+        
+        // Sort versions by timestamp (most recent first)
+        versions.sort((a, b) => b.timestamp - a.timestamp);
+        
+        if (versions.length === 0) {
+          versionsList.innerHTML = '<p class="text-sm text-gray-500">暂无版本历史</p>';
+          return;
+        }
+        
+        versions.forEach(version => {
+          const versionItem = document.createElement('div');
+          versionItem.className = 'version-item pl-3 pr-2 py-2 rounded-md cursor-pointer';
+          versionItem.dataset.versionId = version.id;
+          
+          versionItem.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-medium">版本 ${version.version}</h4>
+                <button class="restore-version-btn text-primary hover:text-accent focus:outline-none">
+                  <i class="fa fa-undo"></i>
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">${new Date(version.timestamp).toLocaleString()}</p>
+            </div>
+          `;
+          
+          // Add event listener to restore button
+          const restoreButton = versionItem.querySelector('.restore-version-btn');
+          restoreButton.addEventListener('click', () => {
+            this.restoreVersion(version.id);
+          });
+          
+          versionsList.appendChild(versionItem);
+        });
+      },
+      
+      // Create a new entry
+      createNewEntry() {
+        const newEntry = {
+          id: 'entry-' + Date.now(),
+          title: '',
+          content: '',
+          projectId: this.currentProject || '',
+          tags: this.currentTag ? [this.currentTag] : [],
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          version: 1
+        };
+        
+        this.data.entries.push(newEntry);
+        storage.saveAllData(this.data);
+        
+        this.loadEntry(newEntry.id);
+        this.renderRecentEntries();
+        
+        // Focus on title input
+        document.getElementById('entry-title').focus();
+      },
+      
+      // Load an entry
+      loadEntry(entryId) {
+        const entry = this.data.entries.find(e => e.id === entryId);
+        
+        if (!entry) return;
+        
+        this.currentEntry = entry;
+        
+        // Update UI
+        document.getElementById('entry-title').value = entry.title || '';
+        document.getElementById('entry-project').value = entry.projectId || '';
+        this.editor.value(entry.content || '');
+        
+        // Update entry date
+        const dateElement = document.getElementById('entry-date');
+        dateElement.textContent = `更新于 ${new Date(entry.updatedAt).toLocaleString()}`;
+        
+        // Render entry tags
+        this.renderEntryTags();
+        
+        // Render versions
+        this.renderVersions();
+        
+        // Update recent entries list (to highlight current entry)
+        this.renderRecentEntries();
+        
+        // Focus on editor
+        this.editor.codemirror.focus();
+      },
+      
+      // Save current entry
+      saveCurrentEntry(isAutoSave = false) {
+        if (!this.currentEntry) return;
+        
+        // Create a version before saving
+        this.createVersion();
+        
+        // Update entry
+        this.currentEntry.title = document.getElementById('entry-title').value;
+        this.currentEntry.content = this.editor.value();
+        this.currentEntry.projectId = document.getElementById('entry-project').value;
+        this.currentEntry.updatedAt = Date.now();
+        this.currentEntry.version++;
+        
+        // Save data
+        storage.saveAllData(this.data);
+        
+        // Update UI
+        const dateElement = document.getElementById('entry-date');
+        dateElement.textContent = `更新于 ${new Date(this.currentEntry.updatedAt).toLocaleString()}`;
+        
+        this.renderRecentEntries();
+        this.renderVersions();
+        
+        // Show toast if not auto-save
+        if (!isAutoSave) {
+          this.showToast('成功', '记录已保存');
+        }
+      },
+      
+      // Create a version of current entry
+      createVersion() {
+        if (!this.currentEntry) return;
+        
+        const version = {
+          id: 'version-' + Date.now(),
+          entryId: this.currentEntry.id,
+          content: this.currentEntry.content,
+          timestamp: Date.now(),
+          version: this.currentEntry.version
+        };
+        
+        this.data.versions.push(version);
+        
+        // Keep only the last 10 versions for each entry
+        const entryVersions = this.data.versions.filter(v => v.entryId === this.currentEntry.id);
+        if (entryVersions.length > 10) {
+          // Sort versions by timestamp (oldest first)
+          const sortedVersions = entryVersions.sort((a, b) => a.timestamp - b.timestamp);
+          
+          // Remove oldest versions
+          const versionsToRemove = sortedVersions.slice(0, sortedVersions.length - 10);
+          versionsToRemove.forEach(v => {
+            const index = this.data.versions.findIndex(ver => ver.id === v.id);
+            if (index !== -1) {
+              this.data.versions.splice(index, 1);
+            }
+          });
+        }
+      },
+      
+      // Restore a version
+      restoreVersion(versionId) {
+        const version = this.data.versions.find(v => v.id === versionId);
+        
+        if (!version || !this.currentEntry) return;
+        
+        // Create a version of current content before restoring
+        this.createVersion();
+        
+        // Update entry content
+        this.currentEntry.content = version.content;
+        this.currentEntry.updatedAt = Date.now();
+        this.currentEntry.version++;
+        
+        // Update editor
+        this.editor.value(version.content);
+        
+        // Save data
+        storage.saveAllData(this.data);
+        
+        // Update UI
+        const dateElement = document.getElementById('entry-date');
+        dateElement.textContent = `更新于 ${new Date(this.currentEntry.updatedAt).toLocaleString()}`;
+        
+        this.renderVersions();
+        this.showToast('成功', '已恢复到版本 ' + version.version);
+      },
+      
+      // Delete current entry
+      deleteCurrentEntry() {
+        if (!this.currentEntry) return;
+        
+        // Remove entry
+        const index = this.data.entries.findIndex(e => e.id === this.currentEntry.id);
+        if (index !== -1) {
+          this.data.entries.splice(index, 1);
+        }
+        
+        // Remove versions
+        this.data.versions = this.data.versions.filter(v => v.entryId !== this.currentEntry.id);
+        
+        // Save data
+        storage.saveAllData(this.data);
+        
+        // Clear current entry
+        this.currentEntry = null;
+        
+        // Update UI
+        document.getElementById('entry-title').value = '';
+        document.getElementById('entry-project').value = '';
+        this.editor.value('');
+        document.getElementById('entry-date').textContent = '';
+        document.getElementById('entry-tags').innerHTML = '';
+        document.getElementById('versions-list').innerHTML = '';
+        
+        this.renderRecentEntries();
+        
+        // Create a new entry
+        this.createNewEntry();
+        
+        this.showToast('成功', '记录已删除');
+      },
+      
+      // Create a new project
+      createNewProject(name, description, color) {
+        const project = {
+          id: 'project-' + Date.now(),
+          name,
+          description,
+          color,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+        
+        this.data.projects.push(project);
+        storage.saveAllData(this.data);
+        
+        this.renderProjects();
+        this.renderProjectSelect();
+        
+        this.showToast('成功', '项目已创建');
+      },
+      
+      // Edit a project
+      editProject(projectId) {
+        const project = this.data.projects.find(p => p.id === projectId);
+        
+        if (!project) return;
+        
+        // Fill form with project data
+        document.getElementById('project-name').value = project.name;
+        document.getElementById('project-description').value = project.description;
+        document.getElementById('project-color').value = project.color;
+        
+        // Show modal
+        document.getElementById('new-project-modal').classList.remove('hidden');
+        
+        // Change form submission to update instead of create
+        const form = document.getElementById('new-project-form');
+        const originalSubmitHandler = form.onsubmit;
+        
+        form.onsubmit = (e) => {
+          e.preventDefault();
+          
+          // Update project
+          project.name = document.getElementById('project-name').value;
+          project.description = document.getElementById('project-description').value;
+          project.color = document.getElementById('project-color').value;
+          project.updatedAt = Date.now();
+          
+          storage.saveAllData(this.data);
+          
+          this.renderProjects();
+          this.renderProjectSelect();
+          
+          document.getElementById('new-project-modal').classList.add('hidden');
+          document.getElementById('new-project-form').reset();
+          
+          // Restore original submit handler
+          form.onsubmit = originalSubmitHandler;
+          
+          this.showToast('成功', '项目已更新');
+        };
+      },
+      
+      // Delete a project
+      deleteProject(projectId) {
+        // Don't allow deleting the default project
+        if (projectId === 'default') {
+          this.showToast('提示', '默认项目不能删除', 'warning');
+          return;
+        }
+        
+        // Confirm deletion
+        if (!confirm('确定要删除这个项目吗？相关的记录将被移至默认项目。')) {
+          return;
+        }
+        
+        // Update entries with this project to use default project
+        this.data.entries.forEach(entry => {
+          if (entry.projectId === projectId) {
+            entry.projectId = 'default';
+          }
+        });
+        
+        // Remove project
+        const index = this.data.projects.findIndex(p => p.id === projectId);
+        if (index !== -1) {
+          this.data.projects.splice(index, 1);
+        }
+        
+        storage.saveAllData(this.data);
+        
+        // If current project is the one being deleted, switch to default project
+        if (this.currentProject === projectId) {
+          this.selectProject('default');
+        }
+        
+        this.renderProjects();
+        this.renderProjectSelect();
+        
+        this.showToast('成功', '项目已删除');
+      },
+      
+      // Select a project
+      selectProject(projectId) {
+        this.currentProject = projectId;
+        this.currentTag = null; // Clear tag filter
+        
+        // Update UI
+        this.renderProjects();
+        this.renderTags();
+        
+        // Filter entries by project
+        this.filterEntriesByProject(projectId);
+      },
+      
+      // Select a tag
+      selectTag(tag) {
+        this.currentTag = tag;
+        this.currentProject = null; // Clear project filter
+        
+        // Update UI
+        this.renderTags();
+        this.renderProjects();
+        
+        // Filter entries by tag
+        this.filterEntriesByTag(tag);
+      },
+      
+      // Filter entries by project
+      filterEntriesByProject(projectId) {
+        const recentEntriesList = document.getElementById('recent-entries');
+        recentEntriesList.innerHTML = '';
+        
+        // Get entries for this project
+        const entries = this.data.entries.filter(e => e.projectId === projectId);
+        
+        // Sort by updated date (most recent first)
+        entries.sort((a, b) => b.updatedAt - a.updatedAt);
+        
+        if (entries.length === 0) {
+          recentEntriesList.innerHTML = '<p class="text-sm text-gray-500 px-3 py-2">此项目暂无记录</p>';
+          return;
+        }
+        
+        entries.forEach(entry => {
+          const entryItem = document.createElement('div');
+          entryItem.className = `entry-item pl-3 pr-2 py-2 rounded-md cursor-pointer ${this.currentEntry && this.currentEntry.id === entry.id ? 'active' : ''}`;
+          entryItem.dataset.entryId = entry.id;
+          
+          entryItem.innerHTML = `
+            <div>
+              <h4 class="text-sm font-medium truncate">${entry.title || '无标题'}</h4>
+              <p class="text-xs text-gray-500 mt-1">${new Date(entry.updatedAt).toLocaleDateString()}</p>
+            </div>
+          `;
+          
+          entryItem.addEventListener('click', () => {
+            this.loadEntry(entry.id);
+          });
+          
+          recentEntriesList.appendChild(entryItem);
+        });
+      },
+      
+      // Filter entries by tag
+      filterEntriesByTag(tag) {
+        const recentEntriesList = document.getElementById('recent-entries');
+        recentEntriesList.innerHTML = '';
+        
+        // Get entries with this tag
+        const entries = this.data.entries.filter(e => e.tags && e.tags.includes(tag));
+        
+        // Sort by updated date (most recent first)
+        entries.sort((a, b) => b.updatedAt - a.updatedAt);
+        
+        if (entries.length === 0) {
+          recentEntriesList.innerHTML = '<p class="text-sm text-gray-500 px-3 py-2">此标签暂无记录</p>';
+          return;
+        }
+        
+        entries.forEach(entry => {
+          const entryItem = document.createElement('div');
+          entryItem.className = `entry-item pl-3 pr-2 py-2 rounded-md cursor-pointer ${this.currentEntry && this.currentEntry.id === entry.id ? 'active' : ''}`;
+          entryItem.dataset.entryId = entry.id;
+          
+          // Get project name if available
+          const project = this.data.projects.find(p => p.id === entry.projectId);
+          const projectName = project ? project.name : '无项目';
+          
+          entryItem.innerHTML = `
+            <div>
+              <h4 class="text-sm font-medium truncate">${entry.title || '无标题'}</h4>
+              <div class="flex items-center mt-1">
+                <span class="text-xs text-gray-500">${new Date(entry.updatedAt).toLocaleDateString()}</span>
+                ${project ? `<span class="text-xs text-gray-500 mx-1">•</span>
+                <span class="text-xs text-gray-500">${projectName}</span>` : ''}
+              </div>
+            </div>
+          `;
+          
+          entryItem.addEventListener('click', () => {
+            this.loadEntry(entry.id);
+          });
+          
+          recentEntriesList.appendChild(entryItem);
+        });
+      },
+      
+      // Filter entries by search query
+      filterEntries(query) {
+        const recentEntriesList = document.getElementById('recent-entries');
+        recentEntriesList.innerHTML = '';
+        
+        if (!query) {
+          this.renderRecentEntries();
+          return;
+        }
+        
+        // Search in title, content, and tags
+        const filteredEntries = this.data.entries.filter(entry => {
+          // Search in title
+          if (entry.title && entry.title.toLowerCase().includes(query)) {
+            return true;
+          }
+          
+          // Search in content
+          if (entry.content && entry.content.toLowerCase().includes(query)) {
+            return true;
+          }
+          
+          // Search in tags
+          if (entry.tags && entry.tags.some(tag => tag.toLowerCase().includes(query))) {
+            return true;
+          }
+          
+          // Search in project name
+          if (entry.projectId) {
+            const project = this.data.projects.find(p => p.id === entry.projectId);
+            if (project && project.name.toLowerCase().includes(query)) {
+              return true;
+            }
+          }
+          
+          return false;
+        });
+        
+        // Sort by updated date (most recent first)
+        filteredEntries.sort((a, b) => b.updatedAt - a.updatedAt);
+        
+        if (filteredEntries.length === 0) {
+          recentEntriesList.innerHTML = '<p class="text-sm text-gray-500 px-3 py-2">未找到匹配的记录</p>';
+          return;
+        }
+        
+        filteredEntries.forEach(entry => {
+          const entryItem = document.createElement('div');
+          entryItem.className = `entry-item pl-3 pr-2 py-2 rounded-md cursor-pointer ${this.currentEntry && this.currentEntry.id === entry.id ? 'active' : ''}`;
+          entryItem.dataset.entryId = entry.id;
+          
+          // Get project name if available
+          const project = this.data.projects.find(p => p.id === entry.projectId);
+          const projectName = project ? project.name : '无项目';
+          
+          entryItem.innerHTML = `
+            <div>
+              <h4 class="text-sm font-medium truncate">${entry.title || '无标题'}</h4>
+              <div class="flex items-center mt-1">
+                <span class="text-xs text-gray-500">${new Date(entry.updatedAt).toLocaleDateString()}</span>
+                ${project ? `<span class="text-xs text-gray-500 mx-1">•</span>
+                <span class="text-xs text-gray-500">${projectName}</span>` : ''}
+              </div>
+            </div>
+          `;
+          
+          entryItem.addEventListener('click', () => {
+            this.loadEntry(entry.id);
+          });
+          
+          recentEntriesList.appendChild(entryItem);
+        });
+      },
+      
+      // Add tag to current entry
+      addTagToEntry(tagName) {
+        if (!this.currentEntry) return;
+        
+        if (!this.currentEntry.tags) {
+          this.currentEntry.tags = [];
+        }
+        
+        if (!this.currentEntry.tags.includes(tagName)) {
+          this.currentEntry.tags.push(tagName);
+          this.scheduleAutoSave();
+          this.renderEntryTags();
+        }
+      },
+      
+      // Remove tag from current entry
+      removeTagFromEntry(tagName) {
+        if (!this.currentEntry || !this.currentEntry.tags) return;
+        
+        const index = this.currentEntry.tags.indexOf(tagName);
+        if (index !== -1) {
+          this.currentEntry.tags.splice(index, 1);
+          this.scheduleAutoSave();
+          this.renderEntryTags();
+        }
+      },
+      
+      // Show toast notification
+      showToast(title, message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toast-title');
+        const toastMessage = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
+        
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+        
+        // Set icon based on type
+        if (type === 'success') {
+          toastIcon.innerHTML = '<i class="fa fa-check-circle text-xl"></i>';
+          toastIcon.className = 'flex-shrink-0 mr-3 text-green-500';
+        } else if (type === 'error') {
+          toastIcon.innerHTML = '<i class="fa fa-exclamation-circle text-xl"></i>';
+          toastIcon.className = 'flex-shrink-0 mr-3 text-red-500';
+        } else if (type === 'warning') {
+          toastIcon.innerHTML = '<i class="fa fa-exclamation-triangle text-xl"></i>';
+          toastIcon.className = 'flex-shrink-0 mr-3 text-yellow-500';
+        }
+        
+        // Show toast
+        toast.classList.remove('translate-y-10', 'opacity-0');
+        
+        // Hide toast after 3 seconds
+        setTimeout(() => {
+          this.hideToast();
+        }, 3000);
+      },
+      
+      // Hide toast notification
+      hideToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('translate-y-10', 'opacity-0');
+      }
+    };
+    
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      ui.init();
+    });
+  </script>
+
+</body></html>
