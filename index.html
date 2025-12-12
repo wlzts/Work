@@ -238,6 +238,15 @@
     }
   </style>
 </head>
+  <!-- 在 <head> 标签最顶部添加 -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self' https://*.github.io;
+  script-src 'self' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net;
+  img-src 'self' data: https://p3-flow-imagex-sign.byteimg.com;
+  font-src 'self' https://cdn.jsdelivr.net;
+  connect-src 'self' https://api.github.com https://*.github.io;
+">
 <body class="bg-gray-50 text-gray-800">
   <div class="app-container">
     <!-- Header -->
