@@ -1,4 +1,6 @@
-<html lang="zh-CN"><head>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Work-log 工作记录系统</title>
@@ -16,6 +18,8 @@
       color: #2c3e50;
       line-height: 1.6;
       overflow-x: hidden;
+      display: flex;
+      min-height: 100vh;
     }
 
     /* Logo样式 - 合力企业风格 */
@@ -98,7 +102,8 @@
       transition: all 0.3s ease;
       box-shadow: 2px 0 15px rgba(0,0,0,0.08);
       overflow-y: auto;
-      border-right: 3px solid #e8eaf6;
+      border-right: 3px solid #de1f1f; /* 合力红边框 */
+      z-index: 100;
     }
 
     .sidebar h2 {
@@ -158,10 +163,29 @@
 
     /* 主内容区样式 */
     .main {
+      flex: 1;
       margin-left: 280px;
+      margin-right: 300px;
       padding: 30px;
       transition: all 0.3s ease;
       background: linear-gradient(135deg, #f5f7fa 0%, #e8eaf6 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .main.full-width {
+      margin-right: 0;
+    }
+
+
+
+    .content-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
     }
 
     /* 卡片样式 - 合力企业风格 */
@@ -400,19 +424,114 @@
       transform: translateY(-1px);
     }
 
-    /* 记录列表样式 */
+    /* 记录列表样式 - 右侧可折叠侧边栏 */
+    .records-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 100vh;
+      background: white;
+      box-shadow: -2px 0 15px rgba(0,0,0,0.1);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, width 0.3s ease;
+      transform: translateX(0);
+      border-left: 3px solid #de1f1f; /* 合力红边框 */
+    }
+    
+    .records-sidebar-resizer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 5px;
+      height: 100%;
+      cursor: col-resize;
+      background: transparent;
+      transition: background 0.2s ease;
+    }
+    
+    .records-sidebar-resizer:hover,
+    .records-sidebar-resizer.dragging {
+      background: #de1f1f;
+    }
+
+    .records-sidebar.collapsed {
+      transform: translateX(calc(100% - 50px));
+      width: 50px;
+      border-left: none; /* 折叠时隐藏边框 */
+    }
+    
+    .records-sidebar.collapsed .records-sidebar-header {
+      width: 50px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .records-sidebar.collapsed .records-sidebar-header h3 {
+      display: none;
+    }
+    
+    .records-sidebar.collapsed .records-sidebar-toggle {
+      margin-right: 0 !important;
+      font-size: 20px;
+    }
+    
+    .records-sidebar.collapsed .records-sidebar-search,
+    .records-sidebar.collapsed .records-sidebar-content,
+    .records-sidebar.collapsed .records-sidebar-resizer {
+      display: none;
+    }
+
+    .records-sidebar-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid #e8eaf6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+    }
+
+    .records-sidebar-toggle {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #666;
+      padding: 5px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .records-sidebar-toggle:hover {
+      background: #de1f1f;
+      color: white;
+    }
+
+    .records-sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 20px 20px;
+    }
+
     .record {
       border-bottom: 1px solid #eee;
       padding: 20px 0;
       position: relative;
-      transition: background 0.2s ease;
+      transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
       border-radius: 8px;
       padding: 15px;
       margin-bottom: 10px;
+      background: white;
     }
 
     .record:hover {
       background: #f9f9f9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .record:last-child {
@@ -456,20 +575,6 @@
     .tag-project {
       background: #de1f1f; /* 合力红项目标签 */
       border-color: #c01919;
-    }
-
-    /* 搜索栏样式 */
-    .search-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .search-bar input, .search-bar select {
-      margin-bottom: 0;
-      flex: 1;
-      min-width: 200px;
     }
 
     /* 模态框样式 */
@@ -631,7 +736,7 @@
       transform: translateX(26px);
     }
 
-    /* 日历样式 - 合力企业风格 */
+    /* 日历样式 - 合力企业风格 - 优化版 */
     .calendar {
       background: white;
       border-radius: 8px;
@@ -701,15 +806,27 @@
       transition: all 0.2s ease;
       position: relative;
       min-height: 60px;
+      background: white;
+      border: 2px solid transparent;
     }
 
     .calendar-day:hover {
       background: #f8f9fa;
+      border-color: #de1f1f;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .calendar-day.selected {
+      background: #ffebee; /* 浅红色背景 */
+      border-color: #d32f2f;
+      color: #d32f2f;
     }
 
     .calendar-day.today {
       background: #d32f2f;
       color: white;
+      border-color: #c01919;
     }
 
     .calendar-day.other-month {
@@ -724,6 +841,8 @@
 
     .calendar-day.has-records:hover {
       background: #fecdd3;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .calendar-day.today.has-records {
@@ -734,6 +853,7 @@
     .day-number {
       font-weight: 600;
       margin-bottom: 4px;
+      font-size: 14px;
     }
 
     .day-record-count {
@@ -780,7 +900,23 @@
       background: #f8f9fa;
     }
 
+
+
     /* 响应式设计 */
+    @media (max-width: 1200px) {
+      .records-sidebar {
+        width: 280px;
+      }
+      
+      .search-filter-container {
+        right: 280px;
+      }
+      
+      .search-filter-container.collapsed {
+        right: 50px;
+      }
+    }
+
     @media (max-width: 768px) {
       .sidebar {
         position: relative;
@@ -791,32 +927,68 @@
         border-right: none;
         border-bottom: 1px solid #eee;
       }
+      
       .main {
         margin-left: 0;
         padding: 15px;
       }
+      
+      .search-filter-container {
+        position: relative;
+        left: 0;
+        right: 0;
+        margin-bottom: 20px;
+      }
+      
+      .content-wrapper {
+        margin-top: 0;
+      }
+      
+      .records-sidebar {
+        width: 100%;
+        height: 50vh;
+        top: auto;
+        bottom: 0;
+        transform: translateY(calc(100% - 50px));
+      }
+      
+      .records-sidebar.collapsed {
+        transform: translateY(calc(100% - 50px));
+      }
+      
+      .records-sidebar.expanded {
+        transform: translateY(0);
+      }
+      
       .search-bar {
         flex-direction: column;
       }
+      
       .search-bar input, .search-bar select {
         min-width: 100%;
       }
+      
       .btn {
         width: 100%;
         margin-right: 0;
       }
+      
       .stats {
         flex-direction: column;
       }
+      
       .stat-card {
         min-width: 100%;
       }
+      
       .calendar-day {
         min-height: 40px;
       }
+      
       .day-number {
         font-size: 12px;
       }
+      
       .day-record-count {
         font-size: 8px;
       }
@@ -851,6 +1023,8 @@
       </button>
     </div>
 
+
+    
     <div class="menu-group">
       <div class="menu-group-title">数据管理</div>
       <button onclick="openGitHubSettings()">
@@ -873,128 +1047,135 @@
 
   <!-- 主内容区 -->
   <div class="main">
-    <!-- 统计卡片 -->
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-label">总记录数</div>
-        <div class="stat-value" id="totalRecords">0</div>
+    <!-- 内容区域 -->
+    <div class="content-wrapper">
+      <!-- 统计卡片 -->
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">总记录数</div>
+          <div class="stat-value" id="totalRecords">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">今日记录</div>
+          <div class="stat-value" id="todayRecords">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">项目总数</div>
+          <div class="stat-value" id="totalProjects">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">标签总数</div>
+          <div class="stat-value" id="totalTags">0</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">今日记录</div>
-        <div class="stat-value" id="todayRecords">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">项目总数</div>
-        <div class="stat-value" id="totalProjects">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">标签总数</div>
-        <div class="stat-value" id="totalTags">0</div>
-      </div>
-    </div>
 
-    <!-- 视图切换按钮 -->
-    <div class="view-toggle">
-      <button onclick="showView('list')" class="active" id="listViewBtn">列表视图</button>
-      <button onclick="showView('calendar')" id="calendarViewBtn">日历视图</button>
-    </div>
+      <!-- 视图切换按钮 -->
+      <div class="view-toggle">
+        <button onclick="showView('list')" class="active" id="listViewBtn">列表视图</button>
+        <button onclick="showView('calendar')" id="calendarViewBtn">日历视图</button>
+      </div>
 
-    <!-- 列表视图内容 -->
-    <div id="listView">
-      <!-- 添加记录卡片 -->
-      <div class="card">
-        <h3>
-          <span>添加工作记录</span>
-          <button class="btn btn-outline" onclick="clearForm()">清空</button>
-        </h3>
-        <div class="form-group">
-          <label for="title">记录标题 <span style="color:#d32f2f">*</span></label>
-          <input id="title" placeholder="请输入记录标题（必填）">
-        </div>
-        <div class="form-group">
-          <label for="projectSelect">项目分类</label>
-          <select id="projectSelect">
-            <option value="">选择项目分类</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="tagSelect">标签</label>
-          <select id="tagSelect" multiple="">
-          </select>
-          <small style="color: #7f8c8d;">按住Ctrl键可多选标签</small>
-        </div>
-        <div class="form-group">
-          <label for="content">记录内容</label>
-          <textarea id="content" placeholder="请输入详细的工作内容"></textarea>
-        </div>
-        <div class="form-group">
-          <label>附件上传</label>
-          <div class="file-upload" onclick="document.getElementById('fileInput').click()">
-            <p>📎 点击上传文件/图片</p>
-            <p style="font-size: 12px; color: #7f8c8d;">支持图片、文档等格式，单个文件不超过5MB</p>
-            <input type="file" id="fileInput" multiple="" accept="image/*,.pdf,.doc,.docx,.txt,.zip" onchange="handleFileUpload(this.files)">
+      <!-- 列表视图内容 -->
+      <div id="listView">
+        <!-- 添加记录卡片 -->
+        <div class="card">
+          <h3>
+            <span>添加工作记录</span>
+            <button class="btn btn-outline" onclick="clearForm()">清空</button>
+          </h3>
+          <div class="form-group">
+            <label for="title">记录标题 <span style="color:#d32f2f">*</span></label>
+            <input id="title" placeholder="请输入记录标题（必填）">
           </div>
-          <div class="file-preview" id="filePreview"></div>
-        </div>
-        <button class="btn btn-primary" onclick="addRecord()" id="addRecordBtn">
-          <span>✚</span> 添加记录
-        </button>
-      </div>
-
-      <!-- 搜索筛选卡片 -->
-      <div class="card">
-        <h3>搜索与筛选</h3>
-        <div class="search-bar">
-          <input id="searchInput" placeholder="搜索标题/内容/标签" oninput="filterRecords()">
-          <select id="projectFilter" onchange="filterRecords()">
-            <option value="">所有项目</option>
-          </select>
-          <select id="tagFilter" onchange="filterRecords()">
-            <option value="">所有标签</option>
-          </select>
-          <button class="btn btn-secondary" onclick="resetFilters()" style="min-width: 120px;">
-            <span>🔄</span> 重置筛选
-          </button>
-        </div>
-      </div>
-
-      <!-- 记录列表卡片 -->
-      <div class="card">
-        <h3>
-          <span>工作记录列表</span>
-          <span id="recordCount" style="font-size: 14px; font-weight: normal; color: #7f8c8d;">共 0 条记录</span>
-        </h3>
-        <div id="recordList"></div>
-      </div>
-    </div>
-
-    <!-- 日历视图内容 -->
-    <div id="calendarView" style="display: none;">
-      <!-- 日历卡片 -->
-      <div class="calendar">
-        <div class="calendar-header">
-          <div class="calendar-nav">
-            <button onclick="changeMonth(-1)">‹</button>
-            <div class="calendar-title" id="calendarTitle">2024年1月</div>
-            <button onclick="changeMonth(1)">›</button>
+          <div class="form-group">
+            <label for="projectSelect">项目分类</label>
+            <select id="projectSelect">
+              <option value="">选择项目分类</option>
+            </select>
           </div>
-          <button class="btn btn-primary" onclick="goToToday()">今天</button>
-        </div>
-        <div class="calendar-grid" id="calendarGrid">
-          <!-- 日历网格将通过JavaScript生成 -->
-        </div>
-      </div>
-
-      <!-- 选中日期的记录列表 -->
-      <div class="card">
-        <h3>
-          <span id="selectedDateTitle">2024年1月1日的记录</span>
-          <button class="btn btn-primary" onclick="addRecordForDate()" id="addRecordForDateBtn">
+          <div class="form-group">
+            <label for="tagSelect">标签</label>
+            <select id="tagSelect" multiple="">
+            </select>
+            <small style="color: #7f8c8d;">按住Ctrl键可多选标签</small>
+          </div>
+          <div class="form-group">
+            <label for="content">记录内容</label>
+            <textarea id="content" placeholder="请输入详细的工作内容"></textarea>
+          </div>
+          <div class="form-group">
+            <label>附件上传</label>
+            <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+              <p>📎 点击上传文件/图片</p>
+              <p style="font-size: 12px; color: #7f8c8d;">支持图片、文档等格式，单个文件不超过5MB</p>
+              <input type="file" id="fileInput" multiple="" accept="image/*,.pdf,.doc,.docx,.txt,.zip" onchange="handleFileUpload(this.files)">
+            </div>
+            <div class="file-preview" id="filePreview"></div>
+          </div>
+          <button class="btn btn-primary" onclick="addRecord()" id="addRecordBtn">
             <span>✚</span> 添加记录
           </button>
-        </h3>
-        <div id="selectedDateRecords"></div>
+        </div>
       </div>
+
+      <!-- 日历视图内容 -->
+      <div id="calendarView" style="display: none;">
+        <!-- 日历卡片 -->
+        <div class="calendar">
+          <div class="calendar-header">
+            <div class="calendar-nav">
+              <button onclick="changeMonth(-1)">‹</button>
+              <div class="calendar-title" id="calendarTitle">2024年1月</div>
+              <button onclick="changeMonth(1)">›</button>
+            </div>
+            <button class="btn btn-primary" onclick="goToToday()">今天</button>
+          </div>
+          <div class="calendar-grid" id="calendarGrid">
+            <!-- 日历网格将通过JavaScript生成 -->
+          </div>
+        </div>
+
+        <!-- 选中日期的记录列表 -->
+        <div class="calendar-actions" style="margin-top: 20px; text-align: center;">
+          <button class="btn btn-primary" onclick="addRecordForDate()" id="addRecordForDateBtn">
+            <span>✚</span> 为选中日期添加记录
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧记录列表侧边栏 -->
+  <div class="records-sidebar" id="recordsSidebar">
+    <div class="records-sidebar-resizer" id="sidebarResizer"></div>
+    <div class="records-sidebar-header">
+      <button class="records-sidebar-toggle" onclick="toggleRecordsSidebar()" style="margin-right: 10px;">
+        <span id="sidebarToggleIcon">‹</span>
+      </button>
+      <h3>工作记录列表 <span id="sidebarRecordCount" style="font-size: 14px; font-weight: normal; color: #7f8c8d;">共 0 条</span></h3>
+    </div>
+    <!-- 搜索筛选区域 -->
+    <div class="records-sidebar-search">
+      <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 0 15px 15px; border: 2px solid #e8eaf6;">
+        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+          <input id="searchInput" placeholder="搜索标题/内容/标签" style="flex: 1; margin-bottom: 0;" onkeypress="if(event.key === 'Enter') performSearch()">
+          <button class="btn btn-primary" onclick="performSearch()" style="min-width: 40px; padding: 12px;">
+            <span>🔍</span>
+          </button>
+        </div>
+        <select id="projectFilter" onchange="filterRecords()" style="margin-bottom: 10px;">
+          <option value="">所有项目</option>
+        </select>
+        <select id="tagFilter" onchange="filterRecords()" style="margin-bottom: 10px;">
+          <option value="">所有标签</option>
+        </select>
+        <button class="btn btn-secondary" onclick="resetFilters()" style="width: 100%; min-width: auto;">
+          <span>🔄</span> 重置筛选
+        </button>
+      </div>
+    </div>
+    <div class="records-sidebar-content">
+      <div id="sidebarRecordList"></div>
     </div>
   </div>
 
@@ -1175,6 +1356,7 @@
     let uploadedFiles = [];
     let editUploadedFiles = [];
     let addDateUploadedFiles = [];
+    let recordsSidebarCollapsed = false;
     
     // 日历相关变量
     let currentDate = new Date();
@@ -1212,7 +1394,48 @@
           closeImageViewer();
         }
       });
+      
+      // 初始化侧边栏拖拽调整功能
+      initSidebarResizer();
     });
+    
+    // 侧边栏拖拽调整功能
+    function initSidebarResizer() {
+      const sidebar = document.getElementById('recordsSidebar');
+      const resizer = document.getElementById('sidebarResizer');
+      let isResizing = false;
+      let startX, startWidth;
+      
+      resizer.addEventListener('mousedown', function(e) {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = sidebar.offsetWidth;
+        resizer.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      });
+      
+      document.addEventListener('mousemove', function(e) {
+        if (!isResizing) return;
+        
+        const deltaX = startX - e.clientX;
+        let newWidth = startWidth + deltaX;
+        
+        // 限制最小和最大宽度
+        newWidth = Math.max(200, Math.min(600, newWidth));
+        
+        sidebar.style.width = newWidth + 'px';
+      });
+      
+      document.addEventListener('mouseup', function() {
+        if (isResizing) {
+          isResizing = false;
+          resizer.classList.remove('dragging');
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+        }
+      });
+    }
 
     // ========== 工具函数 ==========
     function showToast(message, type = 'info', duration = 3000) {
@@ -1300,6 +1523,9 @@
       
       document.getElementById('totalProjects').textContent = projects.length;
       document.getElementById('totalTags').textContent = tags.length;
+      
+      // 更新侧边栏记录数
+      document.getElementById('sidebarRecordCount').textContent = `共 ${records.length} 条`;
     }
 
     // ========== 文件上传与预览 ==========
@@ -1803,11 +2029,40 @@
       document.getElementById('listView').style.display = type === 'list' ? 'block' : 'none';
       document.getElementById('calendarView').style.display = type === 'calendar' ? 'block' : 'none';
       
+      // 自动打开侧边栏并同步更新布局
+      openRecordsSidebar();
+      
       if (type === 'calendar') {
         renderCalendar();
-        renderSelectedDateRecords();
       } else {
         filterRecords();
+      }
+    }
+
+    // ========== 记录侧边栏功能 ==========
+    function toggleRecordsSidebar() {
+      const sidebar = document.getElementById('recordsSidebar');
+      const mainContent = document.querySelector('.main');
+      const toggleIcon = document.getElementById('sidebarToggleIcon');
+      
+      recordsSidebarCollapsed = !recordsSidebarCollapsed;
+      
+      if (recordsSidebarCollapsed) {
+        sidebar.classList.add('collapsed');
+        sidebar.classList.remove('expanded');
+        mainContent.classList.add('full-width');
+        toggleIcon.textContent = '›';
+      } else {
+        sidebar.classList.remove('collapsed');
+        sidebar.classList.add('expanded');
+        mainContent.classList.remove('full-width');
+        toggleIcon.textContent = '‹';
+      }
+    }
+    
+    function openRecordsSidebar() {
+      if (recordsSidebarCollapsed) {
+        toggleRecordsSidebar();
       }
     }
 
@@ -1844,7 +2099,7 @@
       // 按时间倒序排序
       filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
       
-      render(filtered);
+      renderSidebarRecords(filtered);
     });
 
     function resetFilters() {
@@ -1854,10 +2109,27 @@
       filterRecords();
       showToast('筛选条件已重置', 'info');
     }
+    
+    function performSearch() {
+      // 执行搜索
+      filterRecords();
+    }
+    
+    function filterRecordsByDate(date) {
+      const dateStr = date.toDateString();
+      const filtered = records.filter(r => new Date(r.date).toDateString() === dateStr);
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      renderSidebarRecords(filtered);
+      
+      // 显示提示信息
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      showToast(`${year}年${month}月${day}日的记录 (${filtered.length}条)`, 'info');
+    }
 
-    function render(list = records) {
-      const box = document.getElementById('recordList');
-      document.getElementById('recordCount').textContent = `共 ${list.length} 条记录`;
+    function renderSidebarRecords(list = records) {
+      const box = document.getElementById('sidebarRecordList');
       
       if (list.length === 0) {
         box.innerHTML = `
@@ -1936,7 +2208,7 @@
             ${tagNames.map(t => `<span class="tag">${t}</span>`).join('')}
           </div>
           <div style="margin:10px 0; color:#555; line-height: 1.8;">
-            ${r.content || '<span style="color:#999;">无内容</span>'}
+            ${r.content ? r.content.substring(0, 100) + (r.content.length > 100 ? '...' : '') : '<span style="color:#999;">无内容</span>'}
           </div>
           ${filesHtml}
           <div class="record-meta">
@@ -2038,6 +2310,11 @@
           dayDiv.classList.add('today');
         }
         
+        // 检查是否是选中的日期
+        if (fullDate.toDateString() === selectedDate.toDateString()) {
+          dayDiv.classList.add('selected');
+        }
+        
         // 检查是否有记录
         const dayRecords = getRecordsForDate(fullDate);
         if (dayRecords.length > 0) {
@@ -2052,7 +2329,17 @@
         // 添加点击事件
         dayDiv.addEventListener('click', () => {
           selectedDate = new Date(fullDate);
-          renderSelectedDateRecords();
+          renderCalendar(); // 重新渲染日历以更新选中状态
+          
+          // 自动打开侧边栏并显示该日期的记录
+          openRecordsSidebar();
+          filterRecordsByDate(selectedDate);
+          
+          // 添加点击视觉反馈
+          dayDiv.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            dayDiv.style.transform = '';
+          }, 100);
         });
         
         dayDiv.appendChild(dayNumber);
@@ -2458,4 +2745,5 @@
     }
   </script>
 
-</body></html>
+</body>
+</html>
