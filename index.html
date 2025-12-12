@@ -1,1619 +1,1251 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工作记录</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* 全局样式重置 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        /* 应用容器 */
-        .app-container {
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* 侧边栏样式 */
-        .sidebar {
-            width: 280px;
-            background-color: #2c3e50;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid #34495e;
-        }
-
-        .sidebar-header h1 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .sidebar-content {
-            flex: 1;
-            padding: 20px;
-        }
-
-        .sidebar-content h2 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #bdc3c7;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* 视图切换 */
-        .view-section {
-            margin-bottom: 30px;
-        }
-
-        .view-list {
-            list-style: none;
-        }
-
-        .view-item {
-            padding: 12px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .view-item:hover {
-            background-color: #34495e;
-        }
-
-        .view-item.active {
-            background-color: #3498db;
-        }
-
-        .view-item i {
-            margin-right: 10px;
-            font-size: 16px;
-        }
-
-        /* 项目和标签通用样式 */
-        .projects-section,
-        .tags-section {
-            margin-bottom: 30px;
-        }
-
-        .projects-header,
-        .tags-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .add-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .add-btn:hover {
-            background-color: #2980b9;
-            transform: rotate(90deg);
-        }
-
-        /* 项目列表 */
-        .projects-list {
-            list-style: none;
-        }
-
-        .project-item {
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-            background-color: #34495e;
-        }
-
-        .project-item:hover {
-            background-color: #3a5065;
-        }
-
-        .project-item.active {
-            background-color: #3498db;
-        }
-
-        .project-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        /* 标签列表 */
-        .tags-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .tag-item {
-            background-color: #34495e;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .tag-item:hover {
-            background-color: #3498db;
-        }
-
-        .tag-item.active {
-            background-color: #e74c3c;
-        }
-
-        /* GitHub设置 */
-        .github-section {
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid #34495e;
-        }
-
-        .github-form {
-            background-color: #34495e;
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #4a6178;
-            border-radius: 4px;
-            background-color: #2c3e50;
-            color: white;
-            font-size: 14px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .save-btn {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .save-btn:hover {
-            background-color: #229954;
-        }
-
-        .sync-btn {
-            background-color: #e67e22;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            width: 100%;
-        }
-
-        .sync-btn:hover:not(:disabled) {
-            background-color: #d35400;
-        }
-
-        .sync-btn:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
-
-        /* 主内容区 */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        /* 工具栏 */
-        .toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .add-record-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-        }
-
-        .add-record-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-1px);
-        }
-
-        .add-record-btn i {
-            margin-right: 8px;
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #95a5a6;
-        }
-
-        .search-box input {
-            padding: 10px 12px 10px 35px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            width: 300px;
-            transition: all 0.2s ease;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #3498db;
-            width: 350px;
-        }
-
-        /* 记录容器 */
-        .records-container {
-            max-width: 1000px;
-        }
-
-        .records-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .records-header h2 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .record-count {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        /* 记录列表 */
-        .records-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .record-card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .record-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .record-card.important {
-            border-left: 4px solid #e74c3c;
-        }
-
-        .record-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 12px;
-            color: #7f8c8d;
-        }
-
-        .record-date {
-            display: flex;
-            align-items: center;
-        }
-
-        .record-date i {
-            margin-right: 5px;
-        }
-
-        .record-project {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-            color: white;
-        }
-
-        .record-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .record-content {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 15px;
-            line-height: 1.5;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-
-        .record-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .record-tag {
-            background-color: #ecf0f1;
-            color: #34495e;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
-
-        .record-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .edit-btn,
-        .delete-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            padding: 8px;
-            border-radius: 4px;
-        }
-
-        .edit-btn {
-            color: #3498db;
-        }
-
-        .edit-btn:hover {
-            background-color: #ebf5fb;
-        }
-
-        .delete-btn {
-            color: #e74c3c;
-        }
-
-        .delete-btn:hover {
-            background-color: #fdecea;
-        }
-
-        /* 模态框 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .modal-header h3 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 24px;
-            color: #7f8c8d;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .close-btn:hover {
-            background-color: #f5f5f5;
-            color: #2c3e50;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            padding: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .cancel-btn {
-            background-color: #ecf0f1;
-            color: #34495e;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .cancel-btn:hover {
-            background-color: #bdc3c7;
-        }
-
-        /* 标签输入 */
-        .tags-input {
-            margin-bottom: 10px;
-        }
-
-        .selected-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .selected-tag {
-            background-color: #3498db;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-        }
-
-        .selected-tag i {
-            margin-left: 8px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        /* MiniMax Agent 浮动球 */
-        #minimax-floating-ball {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #ffffff;
-            border-radius: 20px;
-            padding: 10px 15px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            font-family: Arial, sans-serif;
-        }
-
-        .minimax-ball-content {
-            display: flex;
-            align-items: center;
-        }
-
-        .minimax-logo-wave {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            margin-right: 10px;
-            animation: wave 2s ease-in-out infinite;
-        }
-
-        @keyframes wave {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        .minimax-ball-text {
-            font-size: 12px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .minimax-close-icon {
-            margin-left: 8px;
-            font-size: 16px;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s ease;
-        }
-
-        .minimax-close-icon:hover {
-            opacity: 1;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .app-container {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                height: auto;
-                max-height: 200px;
-            }
-            
-            .main-content {
-                padding: 15px;
-            }
-            
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-            
-            .search-box input {
-                width: 100%;
-            }
-            
-            .search-box input:focus {
-                width: 100%;
-            }
-            
-            .records-list {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-content {
-                width: 95%;
-                margin: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .sidebar-content {
-                padding: 15px;
-            }
-            
-            .main-content {
-                padding: 10px;
-            }
-            
-            .add-record-btn {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .modal-footer {
-                flex-direction: column;
-            }
-            
-            .save-btn,
-            .cancel-btn {
-                width: 100%;
-            }
-        }
-
-        /* 无记录样式 */
-        .no-records {
-            text-align: center;
-            color: #95a5a6;
-            padding: 50px 0;
-            font-size: 16px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工作记录管理系统</title>
+  <style>
+    /* 全局样式优化 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: #f8f9fa;
+      color: #333;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* 加载动画 */
+    .loader {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3498db;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 通知提示 */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background: #2c3e50;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.success {
+      background: #2ecc71;
+    }
+
+    .toast.error {
+      background: #e74c3c;
+    }
+
+    .toast.info {
+      background: #3498db;
+    }
+
+    /* 侧边栏样式优化 */
+    .sidebar {
+      width: 280px;
+      background: #2c3e50;
+      color: #ecf0f1;
+      height: 100vh;
+      position: fixed;
+      padding: 25px;
+      transition: all 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+      margin-bottom: 30px;
+      color: #3498db;
+      font-weight: 600;
+      border-bottom: 1px solid #34495e;
+      padding-bottom: 15px;
+    }
+
+    .sidebar .menu-group {
+      margin-bottom: 25px;
+    }
+
+    .sidebar .menu-group-title {
+      font-size: 14px;
+      color: #95a5a6;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .sidebar button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #34495e;
+      color: #ecf0f1;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      text-align: left;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar button:hover {
+      background: #3498db;
+    }
+
+    .sidebar button.active {
+      background: #3498db;
+    }
+
+    /* 主内容区样式优化 */
+    .main {
+      margin-left: 280px;
+      padding: 30px;
+      transition: all 0.3s ease;
+    }
+
+    /* 卡片样式优化 */
+    .card {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+      transition: box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      font-weight: 600;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* 表单控件样式优化 */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+      background: #fff;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* 按钮样式优化 */
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #2980b9;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #c0392b;
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #7f8c8d;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #3498db;
+      color: #3498db;
+    }
+
+    .btn-outline:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    /* 记录列表样式优化 */
+    .record {
+      border-bottom: 1px solid #eee;
+      padding: 20px 0;
+      position: relative;
+      transition: background 0.2s ease;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .record:hover {
+      background: #f9f9f9;
+    }
+
+    .record:last-child {
+      border: none;
+      margin-bottom: 0;
+    }
+
+    .record h4 {
+      margin: 0 0 10px 0;
+      color: #2c3e50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .record-meta {
+      font-size: 12px;
+      color: #7f8c8d;
+      margin: 5px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* 标签样式优化 */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      background: #3498db;
+      color: white;
+      padding: 5px 10px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      gap: 4px;
+    }
+
+    .tag-project {
+      background: #2ecc71;
+    }
+
+    /* 搜索栏样式优化 */
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-bar input, .search-bar select {
+      margin-bottom: 0;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    /* 编辑模态框样式优化 */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      position: relative;
+      animation: modalFadeIn 0.3s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #7f8c8d;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: #f1f1f1;
+    }
+
+    /* 空状态样式 */
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #7f8c8d;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    /* 统计信息 */
+    .stats {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 150px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .stat-card .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #3498db;
+      margin: 5px 0;
+    }
+
+    .stat-card .stat-label {
+      font-size: 12px;
+      color: #7f8c8d;
+    }
+
+    /* 响应式设计优化 */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      .main {
+        margin-left: 0;
+        padding: 15px;
+      }
+      .search-bar {
+        flex-direction: column;
+      }
+      .search-bar input, .search-bar select {
+        min-width: 100%;
+      }
+      .btn {
+        width: 100%;
+        margin-right: 0;
+      }
+      .stats {
+        flex-direction: column;
+      }
+      .stat-card {
+        min-width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- 侧边栏 -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1>工作记录</h1>
-            </div>
-            
-            <div class="sidebar-content">
-                <!-- 视图切换 -->
-                <div class="view-section">
-                    <h2>视图</h2>
-                    <ul class="view-list">
-                        <li class="view-item active" data-view="all">
-                            <i class="fas fa-list"></i> 全部记录
-                        </li>
-                        <li class="view-item" data-view="today">
-                            <i class="fas fa-calendar-day"></i> 今天
-                        </li>
-                        <li class="view-item" data-view="week">
-                            <i class="fas fa-calendar-week"></i> 本周
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- 项目分类 -->
-                <div class="projects-section">
-                    <h2>项目</h2>
-                    <div class="projects-header">
-                        <span>项目列表</span>
-                        <button class="add-btn" id="addProjectBtn" onclick="openProjectModal()">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <ul class="projects-list" id="projectsList">
-                        <!-- 项目将通过JavaScript动态添加 -->
-                    </ul>
-                </div>
-                
-                <!-- 标签 -->
-                <div class="tags-section">
-                    <h2>标签</h2>
-                    <div class="tags-header">
-                        <span>标签列表</span>
-                        <button class="add-btn" id="addTagBtn" onclick="openTagModal()">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                    <div class="tags-list" id="tagsList">
-                        <!-- 标签将通过JavaScript动态添加 -->
-                    </div>
-                </div>
-                
-                <!-- GitHub设置 -->
-                <div class="github-section">
-                    <h2>
-                        <i class="fab fa-github"></i> GitHub 设置
-                    </h2>
-                    <div class="github-form" id="githubForm">
-                        <div class="form-group">
-                            <label for="githubOwner">仓库所有者</label>
-                            <input type="text" id="githubOwner" placeholder="用户名或组织名">
-                        </div>
-                        <div class="form-group">
-                            <label for="githubRepo">仓库名称</label>
-                            <input type="text" id="githubRepo" placeholder="仓库名称">
-                        </div>
-                        <div class="form-group">
-                            <label for="githubToken">Personal Access Token</label>
-                            <input type="password" id="githubToken" placeholder="需要repo权限">
-                        </div>
-                        <button class="save-btn" id="saveGitHubConfig" onclick="saveGithubConfig()">保存配置</button>
-                        <button class="sync-btn" id="syncToGitHub" disabled onclick="syncWithGithub()">同步到GitHub</button>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- 主内容区 -->
-        <main class="main-content">
-            <!-- 顶部工具栏 -->
-            <div class="toolbar">
-                <div class="toolbar-left">
-                    <button class="add-record-btn" id="addRecordBtn" onclick="openRecordModal()">
-                        <i class="fas fa-plus"></i> 新增记录
-                    </button>
-                </div>
-                <div class="toolbar-right">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="搜索记录..." oninput="handleSearch(event)">
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 记录列表 -->
-            <div class="records-container">
-                <div class="records-header">
-                    <h2 id="recordsTitle">全部记录</h2>
-                    <span class="record-count" id="recordCount">0 条记录</span>
-                </div>
-                <div class="records-list" id="recordsList">
-                    <!-- 记录将通过JavaScript动态添加 -->
-                </div>
-            </div>
-        </main>
-        
-        <!-- 新增/编辑记录模态框 -->
-        <div class="modal" id="recordModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="modalTitle">新增记录</h3>
-                    <button class="close-btn" id="closeModal" onclick="closeAllModals()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="recordForm" onsubmit="handleRecordSubmit(event)">
-                        <input type="hidden" id="recordId">
-                        <div class="form-group">
-                            <label for="recordTitle">标题</label>
-                            <input type="text" id="recordTitle" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="recordContent">内容</label>
-                            <textarea id="recordContent" rows="4" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="recordProject">项目</label>
-                            <select id="recordProject">
-                                <option value="">无项目</option>
-                                <!-- 项目将通过JavaScript动态添加 -->
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="recordTags">标签</label>
-                            <div class="tags-input" id="tagsInput">
-                                <input type="text" id="tagInput" placeholder="添加标签..." onkeypress="handleTagInput(event)">
-                            </div>
-                            <div class="selected-tags" id="selectedTags"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="recordImportant">重要</label>
-                            <input type="checkbox" id="recordImportant">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="cancel-btn" id="cancelModal" onclick="closeAllModals()">取消</button>
-                    <button class="save-btn" id="saveRecord" onclick="document.getElementById('recordForm').submit()">保存</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 新增项目模态框 -->
-        <div class="modal" id="projectModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>新增项目</h3>
-                    <button class="close-btn" id="closeProjectModal" onclick="closeAllModals()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="projectForm" onsubmit="handleProjectSubmit(event)">
-                        <div class="form-group">
-                            <label for="projectName">项目名称</label>
-                            <input type="text" id="projectName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="projectColor">项目颜色</label>
-                            <input type="color" id="projectColor" value="#3498db">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="cancel-btn" id="cancelProjectModal" onclick="closeAllModals()">取消</button>
-                    <button class="save-btn" id="saveProject" onclick="document.getElementById('projectForm').submit()">保存</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 新增标签模态框 -->
-        <div class="modal" id="tagModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>新增标签</h3>
-                    <button class="close-btn" id="closeTagModal" onclick="closeAllModals()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="tagForm" onsubmit="handleTagSubmit(event)">
-                        <div class="form-group">
-                            <label for="tagName">标签名称</label>
-                            <input type="text" id="tagName" required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="cancel-btn" id="cancelTagModal" onclick="closeAllModals()">取消</button>
-                    <button class="save-btn" id="saveTag" onclick="document.getElementById('tagForm').submit()">保存</button>
-                </div>
-            </div>
-        </div>
-    </div>
+  <!-- 侧边栏 -->
+  <div class="sidebar">
+    <h2>工作记录系统</h2>
     
-    <!-- MiniMax Agent 浮动球 -->
-    <div id="minimax-floating-ball">
-        <div class="minimax-ball-content">
-            <div class="minimax-logo-wave"></div>
-            <span class="minimax-ball-text">Created by MiniMax Agent</span>
-        </div>
-        <div class="minimax-close-icon">×</div>
+    <div class="menu-group">
+      <div class="menu-group-title">视图切换</div>
+      <button onclick="showView('today')" class="active">
+        <span>📅</span> 今天
+      </button>
+      <button onclick="showView('week')">
+        <span>📆</span> 本周
+      </button>
+      <button onclick="showView('all')">
+        <span>📚</span> 全部
+      </button>
     </div>
+
+    <div class="menu-group">
+      <div class="menu-group-title">项目管理</div>
+      <button onclick="openProjectManager()">
+        <span>📁</span> 项目分类管理
+      </button>
+    </div>
+
+    <div class="menu-group">
+      <div class="menu-group-title">数据管理</div>
+      <button onclick="openGitHubSettings()">
+        <span>🔧</span> GitHub 设置
+      </button>
+      <button onclick="syncToGitHub()" id="syncBtn">
+        <span>☁️</span> 同步到GitHub
+      </button>
+      <button onclick="exportLocal()">
+        <span>📤</span> 本地导出
+      </button>
+      <button onclick="importLocal()">
+        <span>📥</span> 本地导入
+      </button>
+    </div>
+  </div>
+
+  <!-- 主内容区 -->
+  <div class="main">
+    <!-- 统计卡片 -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">总记录数</div>
+        <div class="stat-value" id="totalRecords">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">今日记录</div>
+        <div class="stat-value" id="todayRecords">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">项目总数</div>
+        <div class="stat-value" id="totalProjects">0</div>
+      </div>
+    </div>
+
+    <!-- 添加记录卡片 -->
+    <div class="card">
+      <h3>
+        <span>添加工作记录</span>
+        <button class="btn btn-outline" onclick="clearForm()">清空</button>
+      </h3>
+      <div class="form-group">
+        <label for="title">记录标题 <span style="color:red">*</span></label>
+        <input id="title" placeholder="请输入记录标题（必填）" />
+      </div>
+      <div class="form-group">
+        <label for="projectSelect">项目分类</label>
+        <select id="projectSelect">
+          <option value="">选择项目分类</option>
+          <!-- 项目分类会动态加载 -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="content">记录内容</label>
+        <textarea id="content" placeholder="请输入详细的工作内容"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="tags">标签</label>
+        <input id="tags" placeholder="标签（用逗号分隔，例如：开发,bug修复,优化）" />
+      </div>
+      <button class="btn btn-primary" onclick="addRecord()" id="addRecordBtn">
+        <span>✚</span> 添加记录
+      </button>
+    </div>
+
+    <!-- 搜索筛选卡片 -->
+    <div class="card">
+      <h3>搜索与筛选</h3>
+      <div class="search-bar">
+        <input id="searchInput" placeholder="搜索标题/内容/标签" oninput="filterRecords()" />
+        <select id="projectFilter" onchange="filterRecords()">
+          <option value="">所有项目</option>
+          <!-- 项目筛选会动态加载 -->
+        </select>
+        <input id="tagFilter" placeholder="筛选标签" oninput="filterRecords()" />
+        <button class="btn btn-secondary" onclick="resetFilters()" style="min-width: 120px;">
+          <span>🔄</span> 重置筛选
+        </button>
+      </div>
+    </div>
+
+    <!-- 记录列表卡片 -->
+    <div class="card">
+      <h3>
+        <span>工作记录列表</span>
+        <span id="recordCount" style="font-size: 14px; font-weight: normal; color: #7f8c8d;">共 0 条记录</span>
+      </h3>
+      <div id="recordList"></div>
+    </div>
+  </div>
+
+  <!-- 编辑记录模态框 -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <h3>编辑记录</h3>
+      <div class="form-group">
+        <label for="editTitle">记录标题 <span style="color:red">*</span></label>
+        <input id="editTitle" placeholder="请输入记录标题（必填）" />
+      </div>
+      <div class="form-group">
+        <label for="editProjectSelect">项目分类</label>
+        <select id="editProjectSelect">
+          <option value="">选择项目分类</option>
+          <!-- 项目分类会动态加载 -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="editContent">记录内容</label>
+        <textarea id="editContent" placeholder="请输入详细的工作内容"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="editTags">标签</label>
+        <input id="editTags" placeholder="标签（用逗号分隔）" />
+      </div>
+      <button class="btn btn-primary" onclick="saveEdit()">
+        <span>💾</span> 保存修改
+      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">
+        <span>❌</span> 取消
+      </button>
+      <input type="hidden" id="editRecordId" />
+    </div>
+  </div>
+
+  <!-- 项目管理模态框 -->
+  <div id="projectModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <h3>项目分类管理</h3>
+      <div class="form-group">
+        <label for="newProjectName">新项目名称 <span style="color:red">*</span></label>
+        <input id="newProjectName" placeholder="请输入项目名称" />
+      </div>
+      <button class="btn btn-primary" onclick="addProject()">
+        <span>✚</span> 添加项目
+      </button>
+      <div id="projectList" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- 通知提示 -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // 全局数据存储
+    let records = JSON.parse(localStorage.getItem('records') || '[]');
+    let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+    let githubConfig = JSON.parse(localStorage.getItem('githubConfig') || '{}');
+    let currentView = 'today';
     
-    <script>
-        // 全局变量
-        let currentView = 'all';
-        let currentProject = null;
-        let currentTag = null;
-        let currentSearch = '';
-        let records = [];
-        let projects = [];
-        let tags = [];
-        let githubConfig = {
-            accessToken: '',
-            repo: '',
-            branch: 'main',
-            path: 'worklog'
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      renderProjects();
+      updateStats();
+      render();
+      showView('today');
+      
+      // 监听ESC键关闭模态框
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeModal();
+        }
+      });
+      
+      // 点击模态框外部关闭
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+          if (e.target === this) {
+            closeModal();
+          }
+        });
+      });
+    });
+
+    // ========== 工具函数 ==========
+    /**
+     * 显示通知提示
+     * @param {string} message - 提示信息
+     * @param {string} type - success/error/info
+     * @param {number} duration - 显示时长(毫秒)
+     */
+    function showToast(message, type = 'info', duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + type;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    /**
+     * 防抖函数
+     * @param {Function} func - 执行函数
+     * @param {number} wait - 等待时间
+     * @returns {Function}
+     */
+    function debounce(func, wait = 300) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // ========== 核心存储函数 ==========
+    function saveRecords() {
+      try {
+        localStorage.setItem('records', JSON.stringify(records));
+        updateStats();
+        showToast('数据已保存', 'success');
+      } catch (error) {
+        showToast('保存失败：' + error.message, 'error');
+      }
+    }
+
+    function saveProjects() {
+      try {
+        localStorage.setItem('projects', JSON.stringify(projects));
+        renderProjects();
+        updateStats();
+        showToast('项目已保存', 'success');
+      } catch (error) {
+        showToast('保存失败：' + error.message, 'error');
+      }
+    }
+
+    // ========== 统计更新 ==========
+    function updateStats() {
+      // 更新统计数据
+      document.getElementById('totalRecords').textContent = records.length;
+      
+      // 计算今日记录数
+      const today = new Date().toDateString();
+      const todayCount = records.filter(r => new Date(r.date).toDateString() === today).length;
+      document.getElementById('todayRecords').textContent = todayCount;
+      
+      // 更新项目数
+      document.getElementById('totalProjects').textContent = projects.length;
+    }
+
+    // ========== 记录管理功能优化 ==========
+    function addRecord() {
+      const titleInput = document.getElementById('title');
+      const title = titleInput.value.trim();
+      const content = document.getElementById('content').value.trim();
+      const projectId = document.getElementById('projectSelect').value;
+      const tags = document.getElementById('tags').value.split(',')
+        .map(t => t.trim())
+        .filter(t => t);
+
+      // 表单验证优化
+      if (!title) {
+        showToast('请输入记录标题！', 'error');
+        titleInput.focus();
+        return;
+      }
+
+      const newRecord = {
+        id: Date.now(),
+        title,
+        content,
+        projectId,
+        tags,
+        date: new Date().toISOString(),
+        updateTime: new Date().toISOString()
+      };
+
+      records.push(newRecord);
+      saveRecords();
+      render();
+      
+      // 清空表单并给出反馈
+      clearForm();
+      showToast('记录添加成功！', 'success');
+    }
+
+    // 清空表单
+    function clearForm() {
+      document.getElementById('title').value = '';
+      document.getElementById('content').value = '';
+      document.getElementById('tags').value = '';
+      document.getElementById('projectSelect').value = '';
+      document.getElementById('title').focus();
+    }
+
+    function deleteRecord(id) {
+      if (confirm('确定要删除这条记录吗？此操作不可恢复！')) {
+        const recordIndex = records.findIndex(r => r.id === id);
+        if (recordIndex !== -1) {
+          records.splice(recordIndex, 1);
+          saveRecords();
+          render();
+          showToast('记录已删除', 'success');
+        }
+      }
+    }
+
+    function editRecord(id) {
+      const record = records.find(r => r.id === id);
+      if (!record) {
+        showToast('找不到该记录', 'error');
+        return;
+      }
+
+      document.getElementById('editRecordId').value = id;
+      document.getElementById('editTitle').value = record.title;
+      document.getElementById('editContent').value = record.content;
+      document.getElementById('editTags').value = record.tags.join(', ');
+      document.getElementById('editProjectSelect').value = record.projectId || '';
+      
+      document.getElementById('editModal').style.display = 'flex';
+      // 自动聚焦到标题输入框
+      setTimeout(() => {
+        document.getElementById('editTitle').focus();
+      }, 100);
+    }
+
+    function saveEdit() {
+      const id = parseInt(document.getElementById('editRecordId').value);
+      const titleInput = document.getElementById('editTitle');
+      const title = titleInput.value.trim();
+      const content = document.getElementById('editContent').value.trim();
+      const projectId = document.getElementById('editProjectSelect').value;
+      const tags = document.getElementById('editTags').value.split(',')
+        .map(t => t.trim())
+        .filter(t => t);
+
+      if (!title) {
+        showToast('请输入记录标题！', 'error');
+        titleInput.focus();
+        return;
+      }
+
+      const index = records.findIndex(r => r.id === id);
+      if (index !== -1) {
+        records[index] = {
+          ...records[index],
+          title,
+          content,
+          projectId,
+          tags,
+          updateTime: new Date().toISOString()
+        };
+        saveRecords();
+        render();
+        closeModal();
+        showToast('记录已更新', 'success');
+      } else {
+        showToast('记录不存在', 'error');
+      }
+    }
+
+    // ========== 项目分类管理优化 ==========
+    function renderProjects() {
+      // 更新添加记录的项目选择框
+      const projectSelect = document.getElementById('projectSelect');
+      const editProjectSelect = document.getElementById('editProjectSelect');
+      const projectFilter = document.getElementById('projectFilter');
+      
+      // 清空现有选项（保留第一个）
+      projectSelect.innerHTML = '<option value="">选择项目分类</option>';
+      editProjectSelect.innerHTML = '<option value="">选择项目分类</option>';
+      projectFilter.innerHTML = '<option value="">所有项目</option>';
+      
+      // 添加项目选项
+      projects.forEach(project => {
+        const option1 = document.createElement('option');
+        option1.value = project.id;
+        option1.textContent = project.name;
+        projectSelect.appendChild(option1);
+
+        const option2 = document.createElement('option');
+        option2.value = project.id;
+        option2.textContent = project.name;
+        editProjectSelect.appendChild(option2);
+
+        const option3 = document.createElement('option');
+        option3.value = project.id;
+        option3.textContent = project.name;
+        projectFilter.appendChild(option3);
+      });
+
+      // 更新项目管理列表
+      const projectList = document.getElementById('projectList');
+      projectList.innerHTML = '';
+      
+      if (projects.length === 0) {
+        projectList.innerHTML = '<div class="empty-state">暂无项目分类</div>';
+        return;
+      }
+
+      projects.forEach(project => {
+        // 计算该项目下的记录数
+        const recordCount = records.filter(r => r.projectId == project.id).length;
+        
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.style.padding = '10px';
+        div.style.borderBottom = '1px solid #eee';
+        
+        div.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span>📁 ${project.name}</span>
+            <span style="font-size: 12px; color: #7f8c8d;">(${recordCount}条记录)</span>
+          </div>
+          <button class="btn btn-danger" style="padding: 5px 10px;" 
+            onclick="deleteProject(${project.id})"
+            ${recordCount > 0 ? 'disabled title="该项目下有记录，无法删除"' : ''}>
+            删除
+          </button>
+        `;
+        projectList.appendChild(div);
+      });
+    }
+
+    function openProjectManager() {
+      document.getElementById('projectModal').style.display = 'flex';
+      // 自动聚焦到项目名称输入框
+      setTimeout(() => {
+        document.getElementById('newProjectName').focus();
+      }, 100);
+    }
+
+    function addProject() {
+      const nameInput = document.getElementById('newProjectName');
+      const name = nameInput.value.trim();
+      
+      if (!name) {
+        showToast('请输入项目名称！', 'error');
+        nameInput.focus();
+        return;
+      }
+      
+      if (projects.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+        showToast('该项目名称已存在！', 'error');
+        nameInput.focus();
+        return;
+      }
+
+      projects.push({
+        id: Date.now(),
+        name
+      });
+      
+      saveProjects();
+      nameInput.value = '';
+      nameInput.focus();
+    }
+
+    function deleteProject(id) {
+      // 检查该项目是否有关联记录
+      const hasRecords = records.some(r => r.projectId == id);
+      if (hasRecords) {
+        showToast('该项目下有记录，无法删除！', 'error');
+        return;
+      }
+      
+      if (confirm('确定要删除这个项目吗？')) {
+        projects = projects.filter(p => p.id !== id);
+        saveProjects();
+      }
+    }
+
+    // ========== 视图和筛选功能优化 ==========
+    function showView(type) {
+      currentView = type;
+      
+      // 更新按钮激活状态
+      document.querySelectorAll('.sidebar button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes({
+          'today': '今天',
+          'week': '本周',
+          'all': '全部'
+        }[type])) {
+          btn.classList.add('active');
+        }
+      });
+      
+      filterRecords();
+    }
+
+    // 防抖处理筛选函数
+    const filterRecords = debounce(function() {
+      const searchText = document.getElementById('searchInput').value.toLowerCase();
+      const projectFilter = document.getElementById('projectFilter').value;
+      const tagFilter = document.getElementById('tagFilter').value.toLowerCase();
+      
+      let filtered = [...records];
+      const now = new Date();
+
+      // 视图筛选
+      if (currentView === 'today') {
+        filtered = filtered.filter(r => new Date(r.date).toDateString() === now.toDateString());
+      } else if (currentView === 'week') {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 7);
+        filtered = filtered.filter(r => new Date(r.date) >= weekAgo);
+      }
+
+      // 搜索文本筛选（优化匹配逻辑）
+      if (searchText) {
+        filtered = filtered.filter(r => 
+          r.title.toLowerCase().includes(searchText) || 
+          r.content.toLowerCase().includes(searchText) ||
+          r.tags.some(tag => tag.toLowerCase().includes(searchText))
+        );
+      }
+
+      // 项目筛选
+      if (projectFilter) {
+        filtered = filtered.filter(r => r.projectId === projectFilter);
+      }
+
+      // 标签筛选
+      if (tagFilter) {
+        filtered = filtered.filter(r => r.tags.some(tag => tag.toLowerCase().includes(tagFilter)));
+      }
+
+      // 按时间倒序排序
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      render(filtered);
+    });
+
+    // 重置筛选条件
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('projectFilter').value = '';
+      document.getElementById('tagFilter').value = '';
+      filterRecords();
+      showToast('筛选条件已重置', 'info');
+    }
+
+    function render(list = records) {
+      const box = document.getElementById('recordList');
+      document.getElementById('recordCount').textContent = `共 ${list.length} 条记录`;
+      
+      if (list.length === 0) {
+        box.innerHTML = `
+          <div class="empty-state">
+            <div>📭</div>
+            <h4>暂无记录</h4>
+            <p>点击上方"添加记录"按钮创建第一条工作记录吧</p>
+          </div>
+        `;
+        return;
+      }
+
+      box.innerHTML = '';
+      list.forEach(r => {
+        const project = projects.find(p => p.id === r.projectId);
+        const projectName = project ? project.name : '未分类';
+        
+        const div = document.createElement('div');
+        div.className = 'record';
+        
+        // 格式化日期显示
+        const createTime = new Date(r.date).toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        const updateTime = r.updateTime ? new Date(r.updateTime).toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : '';
+        
+        div.innerHTML = `
+          <h4>
+            ${r.title}
+            <span style="font-size: 12px; font-weight: normal; color: #7f8c8d;">
+              ${new Date(r.date).toLocaleDateString()}
+            </span>
+          </h4>
+          <div class="record-meta">
+            <span class="tag tag-project">${projectName}</span>
+            ${r.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+          </div>
+          <div style="margin:10px 0; color:#555; line-height: 1.8;">
+            ${r.content || '<span style="color:#999;">无内容</span>'}
+          </div>
+          <div class="record-meta">
+            <span>创建时间: ${createTime}</span>
+            ${updateTime ? `<span>更新时间: ${updateTime}</span>` : ''}
+          </div>
+          <div style="margin-top:15px;">
+            <button class="btn btn-primary" onclick="editRecord(${r.id})">
+              <span>✏️</span> 编辑
+            </button>
+            <button class="btn btn-danger" onclick="deleteRecord(${r.id})">
+              <span>🗑️</span> 删除
+            </button>
+          </div>
+        `;
+        
+        box.appendChild(div);
+      });
+    }
+
+    // ========== 模态框管理优化 ==========
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+      document.getElementById('projectModal').style.display = 'none';
+    }
+
+    // ========== GitHub 同步功能（保持不变） ==========
+    function openGitHubSettings() {
+      const owner = prompt('GitHub 账户名', githubConfig.owner || '');
+      const repo = prompt('仓库名', githubConfig.repo || '');
+      const token = prompt('Personal Access Token (需要repo权限)', githubConfig.token || '');
+      
+      if (owner && repo && token) {
+        githubConfig = { owner, repo, token };
+        localStorage.setItem('githubConfig', JSON.stringify(githubConfig));
+        showToast('GitHub 配置已保存！', 'success');
+      }
+    }
+
+    async function syncToGitHub() {
+      const syncBtn = document.getElementById('syncBtn');
+      syncBtn.disabled = true;
+      syncBtn.innerHTML = '<span class="loader"></span> 同步中...';
+      
+      try {
+        if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
+          showToast('请先配置 GitHub 设置！', 'error');
+          syncBtn.disabled = false;
+          syncBtn.innerHTML = '<span>☁️</span> 同步到GitHub';
+          return;
+        }
+
+        // 准备要同步的数据
+        const syncData = {
+          records,
+          projects,
+          syncTime: new Date().toISOString()
         };
 
-        // DOM元素
-        const addRecordBtn = document.getElementById('addRecordBtn');
-        const searchInput = document.getElementById('searchInput');
-        const recordsList = document.getElementById('recordsList');
-        const recordCount = document.getElementById('recordCount');
+        // 转换为Base64编码
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(syncData, null, 2))));
+        const path = 'worklog_backup.json';
+        const url = `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${path}`;
 
-        // 模态框元素
-        const recordModal = document.getElementById('recordModal');
-        const recordForm = document.getElementById('recordForm');
-        const projectModal = document.getElementById('projectModal');
-        const projectForm = document.getElementById('projectForm');
-        const tagModal = document.getElementById('tagModal');
-        const tagForm = document.getElementById('tagForm');
-
-        // 初始化
-        function init() {
-            // 加载数据
-            loadData();
-            
-            // 绑定事件
-            bindEvents();
-            
-            // 渲染界面
-            renderAll();
-            
-            // 初始化MiniMax浮动球
-            initMiniMaxBall();
+        // 检查文件是否存在，获取SHA值
+        let sha = undefined;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          sha = data.sha;
         }
 
-        // 加载数据
-        function loadData() {
-            // 从localStorage加载数据
-            const savedRecords = localStorage.getItem('worklog-records');
-            const savedProjects = localStorage.getItem('worklog-projects');
-            const savedTags = localStorage.getItem('worklog-tags');
-            const savedGithubConfig = localStorage.getItem('worklog-github-config');
-            
-            records = savedRecords ? JSON.parse(savedRecords) : [];
-            projects = savedProjects ? JSON.parse(savedProjects) : [];
-            tags = savedTags ? JSON.parse(savedTags) : [];
-            githubConfig = savedGithubConfig ? JSON.parse(savedGithubConfig) : githubConfig;
-            
-            // 如果没有项目，创建默认项目
-            if (projects.length === 0) {
-                projects.push({
-                    id: 'default',
-                    name: '默认项目',
-                    color: '#3498db'
-                });
-                saveData();
-            }
-        }
+        // 上传/更新文件
+        const response = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `token ${githubConfig.token}`
+          },
+          body: JSON.stringify({
+            message: `Work log backup - ${new Date().toLocaleString()}`,
+            content,
+            sha
+          })
+        });
 
-        // 保存数据
-        function saveData() {
-            localStorage.setItem('worklog-records', JSON.stringify(records));
-            localStorage.setItem('worklog-projects', JSON.stringify(projects));
-            localStorage.setItem('worklog-tags', JSON.stringify(tags));
-            localStorage.setItem('worklog-github-config', JSON.stringify(githubConfig));
+        if (response.ok) {
+          showToast('✅ 同步到GitHub成功！', 'success');
+        } else {
+          const error = await response.json();
+          showToast(`❌ 同步失败：${error.message}`, 'error');
         }
+      } catch (error) {
+        showToast(`❌ 同步出错：${error.message}`, 'error');
+      } finally {
+        syncBtn.disabled = false;
+        syncBtn.innerHTML = '<span>☁️</span> 同步到GitHub';
+      }
+    }
 
-        // 绑定事件
-        function bindEvents() {
-            // 视图切换
-            const viewItems = document.querySelectorAll('.view-item');
-            viewItems.forEach(item => {
-                item.addEventListener('click', handleViewChange);
-            });
+    // ========== 本地导入导出优化 ==========
+    function exportLocal() {
+      try {
+        const exportData = {
+          records,
+          projects,
+          exportTime: new Date().toISOString(),
+          version: '1.0.0'
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        
+        // 优化文件名格式
+        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        a.download = `工作记录备份_${dateStr}.json`;
+        
+        a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('导出成功！', 'success');
+      } catch (error) {
+        showToast('导出失败：' + error.message, 'error');
+      }
+    }
+
+    function importLocal() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // 验证文件类型
+        if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
+          showToast('请选择JSON格式的备份文件！', 'error');
+          return;
         }
-
-        // 渲染所有内容
-        function renderAll() {
-            renderProjects();
-            renderTags();
-            renderRecords();
-            renderGithubForm();
-        }
-
-        // 渲染项目列表
-        function renderProjects() {
-            const projectsList = document.getElementById('projectsList');
-            const projectSelect = document.getElementById('recordProject');
+        
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const importedData = JSON.parse(reader.result);
             
-            projectsList.innerHTML = '';
-            projectSelect.innerHTML = '<option value="">无项目</option>';
-            
-            projects.forEach(project => {
-                // 渲染项目列表
-                const li = document.createElement('li');
-                li.className = `project-item ${currentProject === project.id ? 'active' : ''}`;
-                li.dataset.id = project.id;
-                li.innerHTML = `
-                    <div class="project-color" style="background-color: ${project.color}"></div>
-                    ${project.name}
-                `;
-                li.onclick = () => handleProjectChange(project.id);
-                projectsList.appendChild(li);
-                
-                // 渲染项目选择下拉框
-                const option = document.createElement('option');
-                option.value = project.id;
-                option.textContent = project.name;
-                projectSelect.appendChild(option);
-            });
-        }
-
-        // 渲染标签列表
-        function renderTags() {
-            const tagsList = document.getElementById('tagsList');
-            tagsList.innerHTML = '';
-            
-            tags.forEach(tag => {
-                const div = document.createElement('div');
-                div.className = `tag-item ${currentTag === tag ? 'active' : ''}`;
-                div.dataset.name = tag;
-                div.textContent = tag;
-                div.onclick = () => handleTagChange(tag);
-                tagsList.appendChild(div);
-            });
-        }
-
-        // 渲染记录列表
-        function renderRecords() {
-            // 筛选记录
-            let filteredRecords = records;
-            
-            if (currentView === 'today') {
-                const today = new Date().toDateString();
-                filteredRecords = filteredRecords.filter(record => 
-                    new Date(record.date).toDateString() === today
-                );
-            } else if (currentView === 'week') {
-                const now = new Date();
-                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                filteredRecords = filteredRecords.filter(record => 
-                    new Date(record.date) >= weekAgo
-                );
+            // 验证备份文件格式
+            if (!importedData.records || !Array.isArray(importedData.records)) {
+              showToast('备份文件格式不正确！', 'error');
+              return;
             }
             
-            if (currentProject) {
-                filteredRecords = filteredRecords.filter(record => 
-                    record.projectId === currentProject
-                );
+            if (confirm('⚠️ 导入会覆盖现有数据，确定要继续吗？')) {
+              records = importedData.records || [];
+              projects = importedData.projects || [];
+              
+              saveRecords();
+              saveProjects();
+              render();
+              showToast('✅ 导入成功！', 'success');
             }
-            
-            if (currentTag) {
-                filteredRecords = filteredRecords.filter(record => 
-                    record.tags.includes(currentTag)
-                );
-            }
-            
-            if (currentSearch) {
-                const searchLower = currentSearch.toLowerCase();
-                filteredRecords = filteredRecords.filter(record => 
-                    record.title.toLowerCase().includes(searchLower) ||
-                    record.content.toLowerCase().includes(searchLower)
-                );
-            }
-            
-            // 按日期排序
-            filteredRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            // 渲染记录
-            recordsList.innerHTML = '';
-            
-            if (filteredRecords.length === 0) {
-                recordsList.innerHTML = '<p class="no-records">暂无记录</p>';
-            } else {
-                filteredRecords.forEach(record => {
-                    const recordElement = createRecordElement(record);
-                    recordsList.appendChild(recordElement);
-                });
-            }
-            
-            // 更新记录数
-            recordCount.textContent = `共 ${filteredRecords.length} 条记录`;
-        }
-
-        // 创建记录元素
-        function createRecordElement(record) {
-            const div = document.createElement('div');
-            div.className = `record-card ${record.important ? 'important' : ''}`;
-            
-            const project = projects.find(p => p.id === record.projectId) || null;
-            
-            div.innerHTML = `
-                <div class="record-meta">
-                    <div class="record-date">
-                        <i class="far fa-calendar"></i>
-                        ${formatDate(record.date)}
-                    </div>
-                    ${project ? `<div class="record-project" style="background-color: ${project.color}">${project.name}</div>` : ''}
-                </div>
-                <h3 class="record-title">${record.title}</h3>
-                <p class="record-content">${record.content}</p>
-                <div class="record-tags">
-                    ${record.tags.map(tag => `<span class="record-tag">${tag}</span>`).join('')}
-                </div>
-                <div class="record-actions">
-                    <button class="edit-btn" onclick="editRecord('${record.id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="delete-btn" onclick="deleteRecord('${record.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
-            
-            return div;
-        }
-
-        // 渲染GitHub表单
-        function renderGithubForm() {
-            document.getElementById('githubToken').value = githubConfig.accessToken;
-            document.getElementById('githubRepo').value = githubConfig.repo;
-            document.getElementById('githubOwner').value = githubConfig.owner || '';
-        }
-
-        // 格式化日期
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        // 打开记录模态框
-        function openRecordModal() {
-            recordForm.reset();
-            document.getElementById('recordId').value = '';
-            document.getElementById('modalTitle').textContent = '添加记录';
-            document.getElementById('recordDate') ? document.getElementById('recordDate').value = new Date().toISOString().slice(0, 16) : null;
-            document.getElementById('recordProject').value = currentProject || '';
-            document.getElementById('selectedTags').innerHTML = '';
-            recordModal.classList.add('show');
-        }
-
-        // 编辑记录
-        function editRecord(id) {
-            const record = records.find(r => r.id === id);
-            if (!record) return;
-            
-            document.getElementById('recordId').value = record.id;
-            document.getElementById('modalTitle').textContent = '编辑记录';
-            document.getElementById('recordTitle').value = record.title;
-            document.getElementById('recordContent').value = record.content;
-            document.getElementById('recordDate') ? document.getElementById('recordDate').value = record.date.slice(0, 16) : null;
-            document.getElementById('recordProject').value = record.projectId || '';
-            document.getElementById('recordImportant').checked = record.important || false;
-            
-            // 获取选中的标签
-            const selectedTags = document.getElementById('selectedTags');
-            selectedTags.innerHTML = '';
-            record.tags.forEach(tag => {
-                addSelectedTag(tag);
-            });
-            
-            recordModal.classList.add('show');
-        }
-
-        // 删除记录
-        function deleteRecord(id) {
-            if (confirm('确定要删除这条记录吗？')) {
-                records = records.filter(r => r.id !== id);
-                saveData();
-                renderRecords();
-            }
-        }
-
-        // 处理记录表单提交
-        function handleRecordSubmit(e) {
-            e.preventDefault();
-            
-            const id = document.getElementById('recordId').value;
-            const title = document.getElementById('recordTitle').value;
-            const content = document.getElementById('recordContent').value;
-            const date = document.getElementById('recordDate') ? document.getElementById('recordDate').value : new Date().toISOString();
-            const projectId = document.getElementById('recordProject').value;
-            const important = document.getElementById('recordImportant').checked;
-            
-            // 获取选中的标签
-            const selectedTags = Array.from(document.querySelectorAll('.selected-tag'))
-                .map(tag => tag.dataset.name);
-            
-            if (!title.trim()) {
-                alert('请输入记录标题');
-                return;
-            }
-            
-            if (id) {
-                // 编辑记录
-                const recordIndex = records.findIndex(r => r.id === id);
-                if (recordIndex !== -1) {
-                    records[recordIndex] = {
-                        ...records[recordIndex],
-                        title,
-                        content,
-                        date,
-                        projectId,
-                        important,
-                        tags: selectedTags
-                    };
-                }
-            } else {
-                // 添加记录
-                records.push({
-                    id: Date.now().toString(),
-                    title,
-                    content,
-                    date,
-                    projectId,
-                    important,
-                    tags: selectedTags,
-                    createdAt: new Date().toISOString()
-                });
-            }
-            
-            // 保存数据
-            saveData();
-            
-            // 关闭模态框
-            closeAllModals();
-            
-            // 重新渲染
-            renderRecords();
-            renderTags();
-        }
-
-        // 打开项目模态框
-        function openProjectModal() {
-            projectForm.reset();
-            projectModal.classList.add('show');
-        }
-
-        // 处理项目表单提交
-        function handleProjectSubmit(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('projectName').value;
-            const color = document.getElementById('projectColor').value;
-            
-            if (!name.trim()) {
-                alert('请输入项目名称');
-                return;
-            }
-            
-            // 检查项目是否已存在
-            if (projects.some(p => p.name === name)) {
-                alert('项目已存在');
-                return;
-            }
-            
-            // 添加项目
-            projects.push({
-                id: Date.now().toString(),
-                name,
-                color
-            });
-            
-            // 保存数据
-            saveData();
-            
-            // 关闭模态框
-            closeAllModals();
-            
-            // 重新渲染
-            renderAll();
-        }
-
-        // 打开标签模态框
-        function openTagModal() {
-            tagForm.reset();
-            tagModal.classList.add('show');
-        }
-
-        // 处理标签表单提交
-        function handleTagSubmit(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('tagName').value.trim();
-            
-            if (!name) {
-                alert('请输入标签名称');
-                return;
-            }
-            
-            // 检查标签是否已存在
-            if (tags.includes(name)) {
-                alert('标签已存在');
-                return;
-            }
-            
-            // 添加标签
-            tags.push(name);
-            
-            // 保存数据
-            saveData();
-            
-            // 关闭模态框
-            closeAllModals();
-            
-            // 重新渲染
-            renderTags();
-        }
-
-        // 保存GitHub配置
-        function saveGithubConfig() {
-            const accessToken = document.getElementById('githubToken').value;
-            const repo = document.getElementById('githubRepo').value;
-            const owner = document.getElementById('githubOwner').value;
-            
-            if (!accessToken || !repo || !owner) {
-                alert('请填写完整的GitHub信息');
-                return;
-            }
-            
-            // 保存配置
-            githubConfig = {
-                ...githubConfig,
-                accessToken,
-                repo,
-                owner
-            };
-            
-            // 保存到localStorage
-            localStorage.setItem('worklog-github-config', JSON.stringify(githubConfig));
-            
-            alert('GitHub配置已保存');
-        }
-
-        // 同步到GitHub
-        function syncWithGithub() {
-            if (!githubConfig.accessToken || !githubConfig.repo || !githubConfig.owner) {
-                alert('请先配置GitHub信息');
-                return;
-            }
-            
-            const syncBtn = document.getElementById('syncToGitHub');
-            syncBtn.disabled = true;
-            syncBtn.textContent = '同步中...';
-            
-            // 准备要同步的数据
-            const syncData = {
-                records,
-                projects,
-                tags,
-                lastSync: new Date().toISOString()
-            };
-            
-            // 将数据转换为Markdown格式
-            const markdownContent = generateMarkdown(syncData);
-            
-            // 创建文件名
-            const fileName = `${new Date().toISOString().slice(0, 10)}-worklog.md`;
-            
-            // 这里应该实现GitHub API调用
-            // 由于实际环境限制，这里只是模拟同步
-            setTimeout(() => {
-                alert('同步成功！（模拟）');
-                syncBtn.disabled = false;
-                syncBtn.textContent = '同步到GitHub';
-            }, 1500);
-        }
-
-        // 生成Markdown内容
-        function generateMarkdown(data) {
-            let markdown = '# 工作记录\n\n';
-            markdown += `*最后同步时间：${data.lastSync}*\n\n`;
-            
-            // 按项目分组记录
-            const recordsByProject = {};
-            data.records.forEach(record => {
-                if (!recordsByProject[record.projectId]) {
-                    recordsByProject[record.projectId] = [];
-                }
-                recordsByProject[record.projectId].push(record);
-            });
-            
-            // 生成项目部分
-            Object.keys(recordsByProject).forEach(projectId => {
-                const project = data.projects.find(p => p.id === projectId);
-                markdown += `## ${project ? project.name : '未分类'}\n\n`;
-                
-                // 按日期排序记录
-                const projectRecords = recordsByProject[projectId].sort((a, b) => 
-                    new Date(b.date) - new Date(a.date)
-                );
-                
-                projectRecords.forEach(record => {
-                    markdown += `### ${record.title}\n`;
-                    markdown += `**日期：** ${formatDate(record.date)}\n`;
-                    if (record.important) {
-                        markdown += `**重要：** ✅\n`;
-                    }
-                    if (record.tags.length > 0) {
-                        markdown += `**标签：** ${record.tags.join(', ')}\n`;
-                    }
-                    markdown += `\n${record.content}\n\n`;
-                });
-            });
-            
-            return markdown;
-        }
-
-        // 处理视图切换
-        function handleViewChange(e) {
-            // 移除所有活跃状态
-            document.querySelectorAll('.view-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // 添加活跃状态
-            e.target.closest('.view-item').classList.add('active');
-            
-            // 更新当前视图
-            currentView = e.target.closest('.view-item').dataset.view;
-            
-            // 重置其他筛选条件
-            currentProject = null;
-            currentTag = null;
-            currentSearch = '';
-            searchInput.value = '';
-            
-            // 重新渲染
-            renderAll();
-        }
-
-        // 处理项目切换
-        function handleProjectChange(projectId) {
-            currentProject = currentProject === projectId ? null : projectId;
-            renderAll();
-        }
-
-        // 处理标签切换
-        function handleTagChange(tagName) {
-            currentTag = currentTag === tagName ? null : tagName;
-            renderAll();
-        }
-
-        // 处理搜索
-        function handleSearch(e) {
-            currentSearch = e.target.value;
-            renderRecords();
-        }
-
-        // 处理标签输入
-        function handleTagInput(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const tagName = e.target.value.trim();
-                
-                if (tagName && !tags.includes(tagName)) {
-                    tags.push(tagName);
-                    saveData();
-                    renderTags();
-                    addSelectedTag(tagName);
-                } else if (tagName && tags.includes(tagName)) {
-                    addSelectedTag(tagName);
-                }
-                
-                e.target.value = '';
-            }
-        }
-
-        // 添加选中的标签
-        function addSelectedTag(tagName) {
-            const selectedTags = document.getElementById('selectedTags');
-            
-            // 检查标签是否已选中
-            if (Array.from(selectedTags.querySelectorAll('.selected-tag'))
-                .some(tag => tag.dataset.name === tagName)) {
-                return;
-            }
-            
-            const tagElement = document.createElement('span');
-            tagElement.className = 'selected-tag';
-            tagElement.dataset.name = tagName;
-            tagElement.innerHTML = `${tagName} <i class="fas fa-times"></i>`;
-            
-            // 绑定删除事件
-            tagElement.querySelector('i').addEventListener('click', () => {
-                tagElement.remove();
-            });
-            
-            selectedTags.appendChild(tagElement);
-        }
-
-        // 关闭所有模态框
-        function closeAllModals() {
-            recordModal.classList.remove('show');
-            projectModal.classList.remove('show');
-            tagModal.classList.remove('show');
-            
-            // 重置表单
-            recordForm.reset();
-            projectForm.reset();
-            tagForm.reset();
-            
-            // 清空选中的标签
-            document.getElementById('selectedTags').innerHTML = '';
-        }
-
-        // 初始化MiniMax浮动球
-        function initMiniMaxBall() {
-            const ball = document.getElementById('minimax-floating-ball');
-            if (!ball) return;
-            
-            // 添加动画效果
-            ball.addEventListener('mouseenter', () => {
-                ball.style.transform = 'scale(1.1)';
-            });
-            
-            ball.addEventListener('mouseleave', () => {
-                ball.style.transform = 'scale(1)';
-            });
-            
-            // 添加点击事件
-            ball.addEventListener('click', () => {
-                // 可以添加更多功能
-                alert('感谢使用MiniMax Agent创建的工作记录网站！');
-            });
-            
-            // 关闭按钮事件
-            const closeIcon = ball.querySelector('.minimax-close-icon');
-            closeIcon.addEventListener('click', () => {
-                ball.style.display = 'none';
-            });
-        }
-
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+          } catch (error) {
+            showToast(`❌ 导入失败：${error.message}`, 'error');
+          }
+        };
+        
+        reader.readAsText(file);
+      };
+      
+      input.click();
+    }
+  </script>
 </body>
 </html>
