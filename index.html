@@ -1,29 +1,45 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>工作记录管理系统</title>
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work-log 工作记录系统</title>
   <style>
-    /* 全局样式优化 */
+    /* 全局样式 - 适配合力企业品牌风格（合力红+蓝色+黄色点缀） */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     body {
-      background: #f8f9fa;
-      color: #333;
+      background: #f5f7fa;
+      color: #2c3e50;
       line-height: 1.6;
       overflow-x: hidden;
+    }
+
+    /* Logo样式 - 合力企业风格 */
+    .logo-container {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px 0;
+      border-bottom: 2px solid #e8eaf6;
+    }
+    .logo-image {
+      width: 220px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      transition: transform 0.3s ease;
+    }
+    .logo-image:hover {
+      transform: scale(1.05);
     }
 
     /* 加载动画 */
     .loader {
       border: 3px solid #f3f3f3;
-      border-top: 3px solid #3498db;
+      border-top: 3px solid #d32f2f;
       border-radius: 50%;
       width: 20px;
       height: 20px;
@@ -37,20 +53,21 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* 通知提示 */
+    /* 通知提示 - 合力企业风格 */
     .toast {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      padding: 12px 20px;
+      padding: 14px 22px;
       background: #2c3e50;
       color: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
       z-index: 9999;
       opacity: 0;
       transform: translateY(20px);
       transition: all 0.3s ease;
+      font-weight: 500;
     }
 
     .toast.show {
@@ -67,29 +84,31 @@
     }
 
     .toast.info {
-      background: #3498db;
+      background: #de1f1f; /* 合力红通知 */
     }
 
-    /* 侧边栏样式优化 */
+    /* 侧边栏样式 - 合力企业风格 */
     .sidebar {
       width: 280px;
-      background: #2c3e50;
-      color: #ecf0f1;
+      background: #ffffff;
+      color: #2c3e50;
       height: 100vh;
       position: fixed;
       padding: 25px;
       transition: all 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      box-shadow: 2px 0 15px rgba(0,0,0,0.08);
       overflow-y: auto;
+      border-right: 3px solid #e8eaf6;
     }
 
     .sidebar h2 {
       margin-top: 0;
       margin-bottom: 30px;
-      color: #3498db;
-      font-weight: 600;
-      border-bottom: 1px solid #34495e;
+      color: #de1f1f; /* 合力红 */
+      font-weight: 700;
+      border-bottom: 2px solid #e8eaf6;
       padding-bottom: 15px;
+      font-size: 18px;
     }
 
     .sidebar .menu-group {
@@ -98,7 +117,7 @@
 
     .sidebar .menu-group-title {
       font-size: 14px;
-      color: #95a5a6;
+      color: #666666; /* 标题改为深灰色 */
       margin-bottom: 10px;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -109,61 +128,74 @@
       margin: 8px 0;
       padding: 12px 15px;
       border: none;
-      border-radius: 8px;
-      background: #34495e;
-      color: #ecf0f1;
+      border-radius: 6px;
+      background: #f8f9fa;
+      color: #2c3e50;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: all 0.3s ease;
       text-align: left;
       font-size: 14px;
+      font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      border-left: 3px solid transparent;
     }
 
     .sidebar button:hover {
-      background: #3498db;
+      background: #de1f1f; /* 合力红hover效果 */
+      color: #ffffff;
+      border-left-color: #de1f1f;
+      transform: translateX(2px);
     }
 
     .sidebar button.active {
-      background: #3498db;
+      background: #de1f1f; /* 合力红激活状态 */
+      color: #ffffff;
+      border-left-color: #f39c12; /* 黄色点缀 */
+      font-weight: 600;
     }
 
-    /* 主内容区样式优化 */
+    /* 主内容区样式 */
     .main {
       margin-left: 280px;
       padding: 30px;
       transition: all 0.3s ease;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8eaf6 100%);
     }
 
-    /* 卡片样式优化 */
+    /* 卡片样式 - 合力企业风格 */
     .card {
-      background: #fff;
+      background: #ffffff;
       padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
       margin-bottom: 25px;
-      transition: box-shadow 0.2s ease;
+      transition: all 0.3s ease;
       position: relative;
+      border-left: 4px solid #de1f1f; /* 合力红左侧边框 */
+      border-top: 1px solid #e8eaf6;
     }
 
     .card:hover {
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
     }
 
     .card h3 {
       margin-top: 0;
       margin-bottom: 20px;
       color: #2c3e50;
-      font-weight: 600;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
+      font-weight: 700;
+      border-bottom: 2px solid #e8eaf6;
+      padding-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      font-size: 18px;
     }
 
-    /* 表单控件样式优化 */
+    /* 表单控件样式 */
     .form-group {
       margin-bottom: 18px;
     }
@@ -172,7 +204,7 @@
       display: block;
       margin-bottom: 6px;
       font-weight: 500;
-      color: #2c3e50;
+      color: #212121;
     }
 
     input, textarea, select {
@@ -187,8 +219,8 @@
 
     input:focus, textarea:focus, select:focus {
       outline: none;
-      border-color: #3498db;
-      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      border-color: #de1f1f; /* 合力红焦点边框 */
+      box-shadow: 0 0 0 3px rgba(222, 31, 31, 0.15);
     }
 
     textarea {
@@ -196,7 +228,114 @@
       resize: vertical;
     }
 
-    /* 按钮样式优化 */
+    /* 文件上传样式 */
+    .file-upload {
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 15px;
+    }
+
+    .file-upload:hover {
+      border-color: #de1f1f;
+      background: #fff5f5;
+    }
+
+    .file-upload input {
+      display: none;
+    }
+
+    .file-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .file-item {
+      position: relative;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 10px;
+      max-width: 150px;
+      background: #f9f9f9;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .file-item:hover {
+      transform: scale(1.05);
+    }
+
+    .file-item img {
+      max-width: 100%;
+      max-height: 100px;
+      object-fit: contain;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+
+    .file-item .file-name {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-item .file-remove {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* 图片查看器 */
+    .image-viewer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .image-viewer.active {
+      display: flex;
+    }
+
+    .image-viewer img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+
+    .image-viewer-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 30px;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* 按钮样式 - 红色主题 */
     .btn {
       padding: 10px 20px;
       border: none;
@@ -219,12 +358,15 @@
     }
 
     .btn-primary {
-      background: #3498db;
+      background: #de1f1f; /* 合力红按钮 */
       color: white;
+      border: 1px solid #de1f1f;
     }
 
     .btn-primary:hover:not(:disabled) {
-      background: #2980b9;
+      background: #c01919;
+      border-color: #c01919;
+      transform: translateY(-1px);
     }
 
     .btn-danger {
@@ -247,16 +389,18 @@
 
     .btn-outline {
       background: transparent;
-      border: 1px solid #3498db;
-      color: #3498db;
+      border: 2px solid #de1f1f;
+      color: #de1f1f;
+      font-weight: 600;
     }
 
     .btn-outline:hover {
-      background: #3498db;
+      background: #de1f1f;
       color: white;
+      transform: translateY(-1px);
     }
 
-    /* 记录列表样式优化 */
+    /* 记录列表样式 */
     .record {
       border-bottom: 1px solid #eee;
       padding: 20px 0;
@@ -278,7 +422,7 @@
 
     .record h4 {
       margin: 0 0 10px 0;
-      color: #2c3e50;
+      color: #212121;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -293,26 +437,28 @@
       gap: 8px;
     }
 
-    /* 标签样式优化 */
+    /* 标签样式 - 合力企业风格 */
     .tag {
       display: inline-flex;
       align-items: center;
-      background: #3498db;
+      background: #3498db; /* 蓝色标签 */
       color: white;
-      padding: 5px 10px;
+      padding: 6px 12px;
       margin-right: 8px;
       margin-bottom: 8px;
       border-radius: 20px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       gap: 4px;
+      border: 1px solid #2980b9;
     }
 
     .tag-project {
-      background: #2ecc71;
+      background: #de1f1f; /* 合力红项目标签 */
+      border-color: #c01919;
     }
 
-    /* 搜索栏样式优化 */
+    /* 搜索栏样式 */
     .search-bar {
       display: flex;
       gap: 10px;
@@ -326,7 +472,7 @@
       min-width: 200px;
     }
 
-    /* 编辑模态框样式优化 */
+    /* 模态框样式 */
     .modal {
       display: none;
       position: fixed;
@@ -346,7 +492,7 @@
       padding: 30px;
       border-radius: 12px;
       width: 90%;
-      max-width: 600px;
+      max-width: 700px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       position: relative;
       animation: modalFadeIn 0.3s ease;
@@ -410,16 +556,19 @@
       flex: 1;
       min-width: 150px;
       background: white;
-      padding: 15px;
+      padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      border-left: 4px solid #de1f1f; /* 合力红左侧边框 */
+      border-top: 1px solid #e8eaf6;
+      transition: all 0.3s ease;
     }
 
     .stat-card .stat-value {
-      font-size: 24px;
-      font-weight: 600;
-      color: #3498db;
-      margin: 5px 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: #de1f1f;
+      margin: 8px 0;
     }
 
     .stat-card .stat-label {
@@ -427,7 +576,211 @@
       color: #7f8c8d;
     }
 
-    /* 响应式设计优化 */
+    /* 自动同步设置样式 */
+    .sync-settings {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: #de1f1f;
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    /* 日历样式 - 合力企业风格 */
+    .calendar {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      padding: 25px;
+      margin-bottom: 25px;
+      border-left: 4px solid #de1f1f;
+      border-top: 1px solid #e8eaf6;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .calendar-nav button {
+      background: #f5f5f5;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .calendar-nav button:hover {
+      background: #de1f1f;
+      color: white;
+    }
+
+    .calendar-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #212121;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .calendar-weekday {
+      text-align: center;
+      font-weight: 600;
+      color: #7f8c8d;
+      padding: 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      min-height: 60px;
+    }
+
+    .calendar-day:hover {
+      background: #f8f9fa;
+    }
+
+    .calendar-day.today {
+      background: #d32f2f;
+      color: white;
+    }
+
+    .calendar-day.other-month {
+      color: #ccc;
+      background: #f9f9f9;
+    }
+
+    .calendar-day.has-records {
+      background: #fff5f5;
+      border: 2px solid #de1f1f;
+    }
+
+    .calendar-day.has-records:hover {
+      background: #fecdd3;
+    }
+
+    .calendar-day.today.has-records {
+      background: #c01919;
+      border: 2px solid #de1f1f;
+    }
+
+    .day-number {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .day-record-count {
+      font-size: 10px;
+      background: #de1f1f;
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-weight: 600;
+    }
+
+    .calendar-day.today .day-record-count {
+      background: white;
+      color: #d32f2f;
+    }
+
+    .calendar-day.other-month .day-record-count {
+      background: #ccc;
+    }
+
+    /* 日历视图切换按钮 */
+    .view-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .view-toggle button {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .view-toggle button.active {
+      background: #de1f1f;
+      color: white;
+      border-color: #de1f1f;
+    }
+
+    .view-toggle button:hover:not(.active) {
+      background: #f8f9fa;
+    }
+
+    /* 响应式设计 */
     @media (max-width: 768px) {
       .sidebar {
         position: relative;
@@ -435,6 +788,8 @@
         height: auto;
         padding: 15px;
         margin-bottom: 15px;
+        border-right: none;
+        border-bottom: 1px solid #eee;
       }
       .main {
         margin-left: 0;
@@ -456,31 +811,43 @@
       .stat-card {
         min-width: 100%;
       }
+      .calendar-day {
+        min-height: 40px;
+      }
+      .day-number {
+        font-size: 12px;
+      }
+      .day-record-count {
+        font-size: 8px;
+      }
     }
   </style>
 </head>
 <body>
   <!-- 侧边栏 -->
   <div class="sidebar">
-    <h2>工作记录系统</h2>
+    <!-- Logo区域 - 修改为HELI图片样式 -->
+    <div class="logo-container">
+      <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/d7055c089b8345a89c60af64300fee9c~tplv-a9rns2rl98-image.image?rcl=20251212124158E3C8DF6D19737AB83456&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1766119321&amp;x-signature=74fhjYKsIvpjVJ9PNNayjfbdEaE%3D" alt="HELI" class="logo-image">
+    </div>
     
     <div class="menu-group">
       <div class="menu-group-title">视图切换</div>
-      <button onclick="showView('today')" class="active">
-        <span>📅</span> 今天
+      <button onclick="showView('list')" class="active">
+        <span>📋</span> 列表视图
       </button>
-      <button onclick="showView('week')">
-        <span>📆</span> 本周
-      </button>
-      <button onclick="showView('all')">
-        <span>📚</span> 全部
+      <button onclick="showView('calendar')">
+        <span>📅</span> 日历视图
       </button>
     </div>
 
     <div class="menu-group">
-      <div class="menu-group-title">项目管理</div>
+      <div class="menu-group-title">分类管理</div>
       <button onclick="openProjectManager()">
         <span>📁</span> 项目分类管理
+      </button>
+      <button onclick="openTagManager()">
+        <span>🏷️</span> 标签管理
       </button>
     </div>
 
@@ -491,6 +858,9 @@
       </button>
       <button onclick="syncToGitHub()" id="syncBtn">
         <span>☁️</span> 同步到GitHub
+      </button>
+      <button onclick="syncFromGitHub()" id="pullBtn">
+        <span>⬇️</span> 从GitHub更新
       </button>
       <button onclick="exportLocal()">
         <span>📤</span> 本地导出
@@ -517,87 +887,155 @@
         <div class="stat-label">项目总数</div>
         <div class="stat-value" id="totalProjects">0</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-label">标签总数</div>
+        <div class="stat-value" id="totalTags">0</div>
+      </div>
     </div>
 
-    <!-- 添加记录卡片 -->
-    <div class="card">
-      <h3>
-        <span>添加工作记录</span>
-        <button class="btn btn-outline" onclick="clearForm()">清空</button>
-      </h3>
-      <div class="form-group">
-        <label for="title">记录标题 <span style="color:red">*</span></label>
-        <input id="title" placeholder="请输入记录标题（必填）" />
-      </div>
-      <div class="form-group">
-        <label for="projectSelect">项目分类</label>
-        <select id="projectSelect">
-          <option value="">选择项目分类</option>
-          <!-- 项目分类会动态加载 -->
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="content">记录内容</label>
-        <textarea id="content" placeholder="请输入详细的工作内容"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="tags">标签</label>
-        <input id="tags" placeholder="标签（用逗号分隔，例如：开发,bug修复,优化）" />
-      </div>
-      <button class="btn btn-primary" onclick="addRecord()" id="addRecordBtn">
-        <span>✚</span> 添加记录
-      </button>
+    <!-- 视图切换按钮 -->
+    <div class="view-toggle">
+      <button onclick="showView('list')" class="active" id="listViewBtn">列表视图</button>
+      <button onclick="showView('calendar')" id="calendarViewBtn">日历视图</button>
     </div>
 
-    <!-- 搜索筛选卡片 -->
-    <div class="card">
-      <h3>搜索与筛选</h3>
-      <div class="search-bar">
-        <input id="searchInput" placeholder="搜索标题/内容/标签" oninput="filterRecords()" />
-        <select id="projectFilter" onchange="filterRecords()">
-          <option value="">所有项目</option>
-          <!-- 项目筛选会动态加载 -->
-        </select>
-        <input id="tagFilter" placeholder="筛选标签" oninput="filterRecords()" />
-        <button class="btn btn-secondary" onclick="resetFilters()" style="min-width: 120px;">
-          <span>🔄</span> 重置筛选
+    <!-- 列表视图内容 -->
+    <div id="listView">
+      <!-- 添加记录卡片 -->
+      <div class="card">
+        <h3>
+          <span>添加工作记录</span>
+          <button class="btn btn-outline" onclick="clearForm()">清空</button>
+        </h3>
+        <div class="form-group">
+          <label for="title">记录标题 <span style="color:#d32f2f">*</span></label>
+          <input id="title" placeholder="请输入记录标题（必填）">
+        </div>
+        <div class="form-group">
+          <label for="projectSelect">项目分类</label>
+          <select id="projectSelect">
+            <option value="">选择项目分类</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="tagSelect">标签</label>
+          <select id="tagSelect" multiple="">
+          </select>
+          <small style="color: #7f8c8d;">按住Ctrl键可多选标签</small>
+        </div>
+        <div class="form-group">
+          <label for="content">记录内容</label>
+          <textarea id="content" placeholder="请输入详细的工作内容"></textarea>
+        </div>
+        <div class="form-group">
+          <label>附件上传</label>
+          <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+            <p>📎 点击上传文件/图片</p>
+            <p style="font-size: 12px; color: #7f8c8d;">支持图片、文档等格式，单个文件不超过5MB</p>
+            <input type="file" id="fileInput" multiple="" accept="image/*,.pdf,.doc,.docx,.txt,.zip" onchange="handleFileUpload(this.files)">
+          </div>
+          <div class="file-preview" id="filePreview"></div>
+        </div>
+        <button class="btn btn-primary" onclick="addRecord()" id="addRecordBtn">
+          <span>✚</span> 添加记录
         </button>
       </div>
+
+      <!-- 搜索筛选卡片 -->
+      <div class="card">
+        <h3>搜索与筛选</h3>
+        <div class="search-bar">
+          <input id="searchInput" placeholder="搜索标题/内容/标签" oninput="filterRecords()">
+          <select id="projectFilter" onchange="filterRecords()">
+            <option value="">所有项目</option>
+          </select>
+          <select id="tagFilter" onchange="filterRecords()">
+            <option value="">所有标签</option>
+          </select>
+          <button class="btn btn-secondary" onclick="resetFilters()" style="min-width: 120px;">
+            <span>🔄</span> 重置筛选
+          </button>
+        </div>
+      </div>
+
+      <!-- 记录列表卡片 -->
+      <div class="card">
+        <h3>
+          <span>工作记录列表</span>
+          <span id="recordCount" style="font-size: 14px; font-weight: normal; color: #7f8c8d;">共 0 条记录</span>
+        </h3>
+        <div id="recordList"></div>
+      </div>
     </div>
 
-    <!-- 记录列表卡片 -->
-    <div class="card">
-      <h3>
-        <span>工作记录列表</span>
-        <span id="recordCount" style="font-size: 14px; font-weight: normal; color: #7f8c8d;">共 0 条记录</span>
-      </h3>
-      <div id="recordList"></div>
+    <!-- 日历视图内容 -->
+    <div id="calendarView" style="display: none;">
+      <!-- 日历卡片 -->
+      <div class="calendar">
+        <div class="calendar-header">
+          <div class="calendar-nav">
+            <button onclick="changeMonth(-1)">‹</button>
+            <div class="calendar-title" id="calendarTitle">2024年1月</div>
+            <button onclick="changeMonth(1)">›</button>
+          </div>
+          <button class="btn btn-primary" onclick="goToToday()">今天</button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid">
+          <!-- 日历网格将通过JavaScript生成 -->
+        </div>
+      </div>
+
+      <!-- 选中日期的记录列表 -->
+      <div class="card">
+        <h3>
+          <span id="selectedDateTitle">2024年1月1日的记录</span>
+          <button class="btn btn-primary" onclick="addRecordForDate()" id="addRecordForDateBtn">
+            <span>✚</span> 添加记录
+          </button>
+        </h3>
+        <div id="selectedDateRecords"></div>
+      </div>
     </div>
+  </div>
+
+  <!-- 图片查看器 -->
+  <div class="image-viewer" id="imageViewer">
+    <span class="image-viewer-close" onclick="closeImageViewer()">×</span>
+    <img id="viewerImage" src="" alt="预览图片">
   </div>
 
   <!-- 编辑记录模态框 -->
   <div id="editModal" class="modal">
     <div class="modal-content">
-      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <span class="modal-close" onclick="closeModal()">×</span>
       <h3>编辑记录</h3>
       <div class="form-group">
-        <label for="editTitle">记录标题 <span style="color:red">*</span></label>
-        <input id="editTitle" placeholder="请输入记录标题（必填）" />
+        <label for="editTitle">记录标题 <span style="color:#d32f2f">*</span></label>
+        <input id="editTitle" placeholder="请输入记录标题（必填）">
       </div>
       <div class="form-group">
         <label for="editProjectSelect">项目分类</label>
         <select id="editProjectSelect">
           <option value="">选择项目分类</option>
-          <!-- 项目分类会动态加载 -->
         </select>
+      </div>
+      <div class="form-group">
+        <label for="editTagSelect">标签</label>
+        <select id="editTagSelect" multiple="">
+        </select>
+        <small style="color: #7f8c8d;">按住Ctrl键可多选标签</small>
       </div>
       <div class="form-group">
         <label for="editContent">记录内容</label>
         <textarea id="editContent" placeholder="请输入详细的工作内容"></textarea>
       </div>
       <div class="form-group">
-        <label for="editTags">标签</label>
-        <input id="editTags" placeholder="标签（用逗号分隔）" />
+        <label>附件管理</label>
+        <div class="file-upload" onclick="document.getElementById('editFileInput').click()">
+          <p>📎 点击上传文件/图片</p>
+          <input type="file" id="editFileInput" multiple="" accept="image/*,.pdf,.doc,.docx,.txt,.zip" onchange="handleFileUpload(this.files, 'edit')">
+        </div>
+        <div class="file-preview" id="editFilePreview"></div>
       </div>
       <button class="btn btn-primary" onclick="saveEdit()">
         <span>💾</span> 保存修改
@@ -605,23 +1043,122 @@
       <button class="btn btn-secondary" onclick="closeModal()">
         <span>❌</span> 取消
       </button>
-      <input type="hidden" id="editRecordId" />
+      <input type="hidden" id="editRecordId">
+    </div>
+  </div>
+
+  <!-- 添加记录模态框（日历视图用） -->
+  <div id="addRecordModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">×</span>
+      <h3>添加记录</h3>
+      <div class="form-group">
+        <label for="addDateTitle">记录标题 <span style="color:#d32f2f">*</span></label>
+        <input id="addDateTitle" placeholder="请输入记录标题（必填）">
+      </div>
+      <div class="form-group">
+        <label for="addDateProjectSelect">项目分类</label>
+        <select id="addDateProjectSelect">
+          <option value="">选择项目分类</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="addDateTagSelect">标签</label>
+        <select id="addDateTagSelect" multiple="">
+        </select>
+        <small style="color: #7f8c8d;">按住Ctrl键可多选标签</small>
+      </div>
+      <div class="form-group">
+        <label for="addDateContent">记录内容</label>
+        <textarea id="addDateContent" placeholder="请输入详细的工作内容"></textarea>
+      </div>
+      <div class="form-group">
+        <label>附件上传</label>
+        <div class="file-upload" onclick="document.getElementById('addDateFileInput').click()">
+          <p>📎 点击上传文件/图片</p>
+          <input type="file" id="addDateFileInput" multiple="" accept="image/*,.pdf,.doc,.docx,.txt,.zip" onchange="handleFileUpload(this.files, 'addDate')">
+        </div>
+        <div class="file-preview" id="addDateFilePreview"></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveRecordForDate()">
+        <span>💾</span> 保存记录
+      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">
+        <span>❌</span> 取消
+      </button>
+      <input type="hidden" id="addDateSelectedDate">
     </div>
   </div>
 
   <!-- 项目管理模态框 -->
   <div id="projectModal" class="modal">
     <div class="modal-content">
-      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <span class="modal-close" onclick="closeModal()">×</span>
       <h3>项目分类管理</h3>
       <div class="form-group">
-        <label for="newProjectName">新项目名称 <span style="color:red">*</span></label>
-        <input id="newProjectName" placeholder="请输入项目名称" />
+        <label for="newProjectName">新项目名称 <span style="color:#d32f2f">*</span></label>
+        <input id="newProjectName" placeholder="请输入项目名称">
       </div>
       <button class="btn btn-primary" onclick="addProject()">
         <span>✚</span> 添加项目
       </button>
       <div id="projectList" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- 标签管理模态框 -->
+  <div id="tagModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">×</span>
+      <h3>标签管理</h3>
+      <div class="form-group">
+        <label for="newTagName">新标签名称 <span style="color:#d32f2f">*</span></label>
+        <input id="newTagName" placeholder="请输入标签名称">
+      </div>
+      <button class="btn btn-primary" onclick="addTag()">
+        <span>✚</span> 添加标签
+      </button>
+      <div id="tagList" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+
+  <!-- GitHub设置模态框 -->
+  <div id="githubModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">×</span>
+      <h3>GitHub 同步设置</h3>
+      <div class="form-group">
+        <label for="githubOwner">GitHub 账户名 <span style="color:#d32f2f">*</span></label>
+        <input id="githubOwner" placeholder="例如：username" value="">
+      </div>
+      <div class="form-group">
+        <label for="githubRepo">仓库名 <span style="color:#d32f2f">*</span></label>
+        <input id="githubRepo" placeholder="例如：worklog-backup" value="">
+      </div>
+      <div class="form-group">
+        <label for="githubToken">Personal Access Token <span style="color:#d32f2f">*</span></label>
+        <input id="githubToken" type="password" placeholder="需要repo权限的Token" value="">
+      </div>
+      <div class="sync-settings">
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoSyncToggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <span>启用自动同步（每30分钟）</span>
+      </div>
+      <div class="sync-settings">
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoPullToggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <span>启动时自动从GitHub更新</span>
+      </div>
+      <button class="btn btn-primary" onclick="saveGitHubConfig()">
+        <span>💾</span> 保存设置
+      </button>
+      <button class="btn btn-secondary" onclick="closeModal()">
+        <span>❌</span> 取消
+      </button>
     </div>
   </div>
 
@@ -632,40 +1169,52 @@
     // 全局数据存储
     let records = JSON.parse(localStorage.getItem('records') || '[]');
     let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+    let tags = JSON.parse(localStorage.getItem('tags') || '[]');
     let githubConfig = JSON.parse(localStorage.getItem('githubConfig') || '{}');
-    let currentView = 'today';
+    let currentView = 'list';
+    let uploadedFiles = [];
+    let editUploadedFiles = [];
+    let addDateUploadedFiles = [];
+    
+    // 日历相关变量
+    let currentDate = new Date();
+    let selectedDate = new Date();
+    
+    // 自动同步相关配置
+    let autoSyncInterval = null;
+    const AUTO_SYNC_INTERVAL = 30 * 60 * 1000; // 30分钟
     
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
       renderProjects();
+      renderTags();
       updateStats();
       render();
-      showView('today');
+      showView('list');
+      
+      // 加载GitHub配置
+      loadGitHubConfig();
+      
+      // 检查自动同步设置
+      checkAutoSyncSettings();
+      
+      // 启动时自动从GitHub更新（如果启用）
+      if (githubConfig.autoPull === true) {
+        setTimeout(() => {
+          syncFromGitHub(true);
+        }, 3000);
+      }
       
       // 监听ESC键关闭模态框
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
           closeModal();
+          closeImageViewer();
         }
-      });
-      
-      // 点击模态框外部关闭
-      document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-          if (e.target === this) {
-            closeModal();
-          }
-        });
       });
     });
 
     // ========== 工具函数 ==========
-    /**
-     * 显示通知提示
-     * @param {string} message - 提示信息
-     * @param {string} type - success/error/info
-     * @param {number} duration - 显示时长(毫秒)
-     */
     function showToast(message, type = 'info', duration = 3000) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
@@ -677,18 +1226,34 @@
       }, duration);
     }
 
-    /**
-     * 防抖函数
-     * @param {Function} func - 执行函数
-     * @param {number} wait - 等待时间
-     * @returns {Function}
-     */
     function debounce(func, wait = 300) {
       let timeout;
       return function(...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), wait);
       };
+    }
+
+    async function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // ========== 图片查看器功能 ==========
+    function openImageViewer(imageUrl) {
+      const viewer = document.getElementById('imageViewer');
+      const viewerImage = document.getElementById('viewerImage');
+      viewerImage.src = imageUrl;
+      viewer.classList.add('active');
+    }
+
+    function closeImageViewer() {
+      const viewer = document.getElementById('imageViewer');
+      viewer.classList.remove('active');
     }
 
     // ========== 核心存储函数 ==========
@@ -713,31 +1278,105 @@
       }
     }
 
+    function saveTags() {
+      try {
+        localStorage.setItem('tags', JSON.stringify(tags));
+        renderTags();
+        updateStats();
+        showToast('标签已保存', 'success');
+      } catch (error) {
+        showToast('保存失败：' + error.message, 'error');
+      }
+    }
+
     // ========== 统计更新 ==========
     function updateStats() {
-      // 更新统计数据
       document.getElementById('totalRecords').textContent = records.length;
       
-      // 计算今日记录数
+      // 今日记录数
       const today = new Date().toDateString();
       const todayCount = records.filter(r => new Date(r.date).toDateString() === today).length;
       document.getElementById('todayRecords').textContent = todayCount;
       
-      // 更新项目数
       document.getElementById('totalProjects').textContent = projects.length;
+      document.getElementById('totalTags').textContent = tags.length;
     }
 
-    // ========== 记录管理功能优化 ==========
+    // ========== 文件上传与预览 ==========
+    async function handleFileUpload(files, type = 'add') {
+      const previewContainer = document.getElementById(type === 'add' ? 'filePreview' : (type === 'edit' ? 'editFilePreview' : 'addDateFilePreview'));
+      const fileArray = type === 'add' ? uploadedFiles : (type === 'edit' ? editUploadedFiles : addDateUploadedFiles);
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        if (file.size > 5 * 1024 * 1024) {
+          showToast(`文件 ${file.name} 超过5MB限制`, 'error');
+          continue;
+        }
+        
+        try {
+          const base64Data = await fileToBase64(file);
+          const fileObj = {
+            id: Date.now() + i,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            data: base64Data
+          };
+          
+          fileArray.push(fileObj);
+          
+          const fileItem = document.createElement('div');
+          fileItem.className = 'file-item';
+          fileItem.dataset.fileId = fileObj.id;
+          
+          let filePreview = '';
+          if (file.type.startsWith('image/')) {
+            filePreview = `<img src="${base64Data}" alt="${file.name}" onclick="openImageViewer('${base64Data}')" />`;
+          } else {
+            filePreview = `<div style="text-align:center; padding:20px; font-size:24px;">📄</div>`;
+          }
+          
+          fileItem.innerHTML = `
+            ${filePreview}
+            <div class="file-name">${file.name}</div>
+            <div style="font-size:10px; color:#7f8c8d;">${(file.size / 1024).toFixed(1)}KB</div>
+            <div class="file-remove" onclick="removeFile(${fileObj.id}, '${type}')">×</div>
+          `;
+          
+          previewContainer.appendChild(fileItem);
+        } catch (error) {
+          showToast(`文件上传失败：${error.message}`, 'error');
+        }
+      }
+    }
+
+    function removeFile(fileId, type = 'add') {
+      const previewContainer = document.getElementById(type === 'add' ? 'filePreview' : (type === 'edit' ? 'editFilePreview' : 'addDateFilePreview'));
+      const fileArray = type === 'add' ? uploadedFiles : (type === 'edit' ? editUploadedFiles : addDateUploadedFiles);
+      
+      const index = fileArray.findIndex(f => f.id === fileId);
+      if (index !== -1) {
+        fileArray.splice(index, 1);
+      }
+      
+      const fileItem = previewContainer.querySelector(`[data-file-id="${fileId}"]`);
+      if (fileItem) {
+        fileItem.remove();
+      }
+    }
+
+    // ========== 记录管理功能 ==========
     function addRecord() {
       const titleInput = document.getElementById('title');
       const title = titleInput.value.trim();
       const content = document.getElementById('content').value.trim();
       const projectId = document.getElementById('projectSelect').value;
-      const tags = document.getElementById('tags').value.split(',')
-        .map(t => t.trim())
-        .filter(t => t);
+      
+      const tagSelect = document.getElementById('tagSelect');
+      const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
 
-      // 表单验证优化
       if (!title) {
         showToast('请输入记录标题！', 'error');
         titleInput.focus();
@@ -749,7 +1388,8 @@
         title,
         content,
         projectId,
-        tags,
+        tags: selectedTags,
+        files: [...uploadedFiles],
         date: new Date().toISOString(),
         updateTime: new Date().toISOString()
       };
@@ -758,17 +1398,75 @@
       saveRecords();
       render();
       
-      // 清空表单并给出反馈
       clearForm();
+      uploadedFiles = [];
+      document.getElementById('filePreview').innerHTML = '';
       showToast('记录添加成功！', 'success');
     }
 
-    // 清空表单
+    function addRecordForDate() {
+      const modal = document.getElementById('addRecordModal');
+      modal.style.display = 'flex';
+      
+      // 设置选中日期
+      document.getElementById('addDateSelectedDate').value = selectedDate.toISOString();
+      
+      // 清空表单
+      document.getElementById('addDateTitle').value = '';
+      document.getElementById('addDateContent').value = '';
+      document.getElementById('addDateProjectSelect').value = '';
+      document.getElementById('addDateTagSelect').selectedIndex = -1;
+      document.getElementById('addDateFilePreview').innerHTML = '';
+      addDateUploadedFiles = [];
+      
+      setTimeout(() => {
+        document.getElementById('addDateTitle').focus();
+      }, 100);
+    }
+
+    function saveRecordForDate() {
+      const titleInput = document.getElementById('addDateTitle');
+      const title = titleInput.value.trim();
+      const content = document.getElementById('addDateContent').value.trim();
+      const projectId = document.getElementById('addDateProjectSelect').value;
+      const selectedDateStr = document.getElementById('addDateSelectedDate').value;
+      
+      const tagSelect = document.getElementById('addDateTagSelect');
+      const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
+
+      if (!title) {
+        showToast('请输入记录标题！', 'error');
+        titleInput.focus();
+        return;
+      }
+
+      const newRecord = {
+        id: Date.now(),
+        title,
+        content,
+        projectId,
+        tags: selectedTags,
+        files: [...addDateUploadedFiles],
+        date: selectedDateStr,
+        updateTime: new Date().toISOString()
+      };
+
+      records.push(newRecord);
+      saveRecords();
+      
+      // 更新日历视图
+      renderCalendar();
+      renderSelectedDateRecords();
+      
+      closeModal();
+      showToast('记录添加成功！', 'success');
+    }
+
     function clearForm() {
       document.getElementById('title').value = '';
       document.getElementById('content').value = '';
-      document.getElementById('tags').value = '';
       document.getElementById('projectSelect').value = '';
+      document.getElementById('tagSelect').selectedIndex = -1;
       document.getElementById('title').focus();
     }
 
@@ -779,6 +1477,13 @@
           records.splice(recordIndex, 1);
           saveRecords();
           render();
+          
+          // 如果在日历视图中，更新日历和选中日期的记录
+          if (currentView === 'calendar') {
+            renderCalendar();
+            renderSelectedDateRecords();
+          }
+          
           showToast('记录已删除', 'success');
         }
       }
@@ -794,11 +1499,40 @@
       document.getElementById('editRecordId').value = id;
       document.getElementById('editTitle').value = record.title;
       document.getElementById('editContent').value = record.content;
-      document.getElementById('editTags').value = record.tags.join(', ');
       document.getElementById('editProjectSelect').value = record.projectId || '';
       
+      const tagSelect = document.getElementById('editTagSelect');
+      Array.from(tagSelect.options).forEach(option => {
+        option.selected = record.tags && record.tags.includes(option.value);
+      });
+      
+      editUploadedFiles = record.files || [];
+      const previewContainer = document.getElementById('editFilePreview');
+      previewContainer.innerHTML = '';
+      
+      (record.files || []).forEach(file => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.dataset.fileId = file.id;
+        
+        let filePreview = '';
+        if (file.type.startsWith('image/')) {
+          filePreview = `<img src="${file.data}" alt="${file.name}" onclick="openImageViewer('${file.data}')" />`;
+        } else {
+          filePreview = `<div style="text-align:center; padding:20px; font-size:24px;">📄</div>`;
+        }
+        
+        fileItem.innerHTML = `
+          ${filePreview}
+          <div class="file-name">${file.name}</div>
+          <div style="font-size:10px; color:#7f8c8d;">${(file.size / 1024).toFixed(1)}KB</div>
+          <div class="file-remove" onclick="removeFile(${file.id}, 'edit')">×</div>
+        `;
+        
+        previewContainer.appendChild(fileItem);
+      });
+      
       document.getElementById('editModal').style.display = 'flex';
-      // 自动聚焦到标题输入框
       setTimeout(() => {
         document.getElementById('editTitle').focus();
       }, 100);
@@ -810,9 +1544,9 @@
       const title = titleInput.value.trim();
       const content = document.getElementById('editContent').value.trim();
       const projectId = document.getElementById('editProjectSelect').value;
-      const tags = document.getElementById('editTags').value.split(',')
-        .map(t => t.trim())
-        .filter(t => t);
+      
+      const tagSelect = document.getElementById('editTagSelect');
+      const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
 
       if (!title) {
         showToast('请输入记录标题！', 'error');
@@ -827,11 +1561,19 @@
           title,
           content,
           projectId,
-          tags,
+          tags: selectedTags,
+          files: [...editUploadedFiles],
           updateTime: new Date().toISOString()
         };
         saveRecords();
         render();
+        
+        // 如果在日历视图中，更新日历和选中日期的记录
+        if (currentView === 'calendar') {
+          renderCalendar();
+          renderSelectedDateRecords();
+        }
+        
         closeModal();
         showToast('记录已更新', 'success');
       } else {
@@ -839,37 +1581,25 @@
       }
     }
 
-    // ========== 项目分类管理优化 ==========
+    // ========== 项目分类管理 ==========
     function renderProjects() {
-      // 更新添加记录的项目选择框
       const projectSelect = document.getElementById('projectSelect');
       const editProjectSelect = document.getElementById('editProjectSelect');
       const projectFilter = document.getElementById('projectFilter');
+      const addDateProjectSelect = document.getElementById('addDateProjectSelect');
       
-      // 清空现有选项（保留第一个）
-      projectSelect.innerHTML = '<option value="">选择项目分类</option>';
-      editProjectSelect.innerHTML = '<option value="">选择项目分类</option>';
-      projectFilter.innerHTML = '<option value="">所有项目</option>';
-      
-      // 添加项目选项
-      projects.forEach(project => {
-        const option1 = document.createElement('option');
-        option1.value = project.id;
-        option1.textContent = project.name;
-        projectSelect.appendChild(option1);
-
-        const option2 = document.createElement('option');
-        option2.value = project.id;
-        option2.textContent = project.name;
-        editProjectSelect.appendChild(option2);
-
-        const option3 = document.createElement('option');
-        option3.value = project.id;
-        option3.textContent = project.name;
-        projectFilter.appendChild(option3);
+      [projectSelect, editProjectSelect, projectFilter, addDateProjectSelect].forEach(select => {
+        if (select) {
+          select.innerHTML = '<option value="">选择项目分类</option>';
+          projects.forEach(project => {
+            const option = document.createElement('option');
+            option.value = project.id;
+            option.textContent = project.name;
+            select.appendChild(option);
+          });
+        }
       });
 
-      // 更新项目管理列表
       const projectList = document.getElementById('projectList');
       projectList.innerHTML = '';
       
@@ -879,7 +1609,6 @@
       }
 
       projects.forEach(project => {
-        // 计算该项目下的记录数
         const recordCount = records.filter(r => r.projectId == project.id).length;
         
         const div = document.createElement('div');
@@ -906,7 +1635,6 @@
 
     function openProjectManager() {
       document.getElementById('projectModal').style.display = 'flex';
-      // 自动聚焦到项目名称输入框
       setTimeout(() => {
         document.getElementById('newProjectName').focus();
       }, 100);
@@ -939,7 +1667,6 @@
     }
 
     function deleteProject(id) {
-      // 检查该项目是否有关联记录
       const hasRecords = records.some(r => r.projectId == id);
       if (hasRecords) {
         showToast('该项目下有记录，无法删除！', 'error');
@@ -952,49 +1679,155 @@
       }
     }
 
-    // ========== 视图和筛选功能优化 ==========
+    // ========== 标签管理 ==========
+    function renderTags() {
+      const tagSelect = document.getElementById('tagSelect');
+      const editTagSelect = document.getElementById('editTagSelect');
+      const tagFilter = document.getElementById('tagFilter');
+      const addDateTagSelect = document.getElementById('addDateTagSelect');
+      
+      [tagSelect, editTagSelect, tagFilter, addDateTagSelect].forEach(select => {
+        if (select) {
+          select.innerHTML = '';
+          if (select.id === 'tagFilter') {
+            select.innerHTML = '<option value="">所有标签</option>';
+          }
+          tags.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.id;
+            option.textContent = tag.name;
+            select.appendChild(option);
+          });
+        }
+      });
+
+      const tagList = document.getElementById('tagList');
+      tagList.innerHTML = '';
+      
+      if (tags.length === 0) {
+        tagList.innerHTML = '<div class="empty-state">暂无标签</div>';
+        return;
+      }
+
+      tags.forEach(tag => {
+        const recordCount = records.filter(r => r.tags && r.tags.includes(tag.id.toString())).length;
+        
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.style.padding = '10px';
+        div.style.borderBottom = '1px solid #eee';
+        
+        div.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span>🏷️ ${tag.name}</span>
+            <span style="font-size: 12px; color: #7f8c8d;">(${recordCount}条记录)</span>
+          </div>
+          <button class="btn btn-danger" style="padding: 5px 10px;" 
+            onclick="deleteTag(${tag.id})"
+            ${recordCount > 0 ? 'disabled title="该标签下有记录，无法删除"' : ''}>
+            删除
+          </button>
+        `;
+        tagList.appendChild(div);
+      });
+    }
+
+    function openTagManager() {
+      document.getElementById('tagModal').style.display = 'flex';
+      setTimeout(() => {
+        document.getElementById('newTagName').focus();
+      }, 100);
+    }
+
+    function addTag() {
+      const nameInput = document.getElementById('newTagName');
+      const name = nameInput.value.trim();
+      
+      if (!name) {
+        showToast('请输入标签名称！', 'error');
+        nameInput.focus();
+        return;
+      }
+      
+      if (tags.some(t => t.name.toLowerCase() === name.toLowerCase())) {
+        showToast('该标签名称已存在！', 'error');
+        nameInput.focus();
+        return;
+      }
+
+      tags.push({
+        id: Date.now(),
+        name
+      });
+      
+      saveTags();
+      nameInput.value = '';
+      nameInput.focus();
+    }
+
+    function deleteTag(id) {
+      const hasRecords = records.some(r => r.tags && r.tags.includes(id.toString()));
+      if (hasRecords) {
+        showToast('该标签下有记录，无法删除！', 'error');
+        return;
+      }
+      
+      if (confirm('确定要删除这个标签吗？')) {
+        tags = tags.filter(t => t.id !== id);
+        saveTags();
+      }
+    }
+
+    // ========== 视图切换功能 ==========
     function showView(type) {
       currentView = type;
       
-      // 更新按钮激活状态
+      // 更新侧边栏按钮激活状态
       document.querySelectorAll('.sidebar button').forEach(btn => {
         btn.classList.remove('active');
         if (btn.textContent.includes({
-          'today': '今天',
-          'week': '本周',
-          'all': '全部'
+          'list': '列表视图',
+          'calendar': '日历视图'
         }[type])) {
           btn.classList.add('active');
         }
       });
       
-      filterRecords();
+      // 更新视图切换按钮状态
+      document.getElementById('listViewBtn').classList.toggle('active', type === 'list');
+      document.getElementById('calendarViewBtn').classList.toggle('active', type === 'calendar');
+      
+      // 显示对应的视图
+      document.getElementById('listView').style.display = type === 'list' ? 'block' : 'none';
+      document.getElementById('calendarView').style.display = type === 'calendar' ? 'block' : 'none';
+      
+      if (type === 'calendar') {
+        renderCalendar();
+        renderSelectedDateRecords();
+      } else {
+        filterRecords();
+      }
     }
 
-    // 防抖处理筛选函数
+    // ========== 列表视图筛选功能 ==========
     const filterRecords = debounce(function() {
       const searchText = document.getElementById('searchInput').value.toLowerCase();
       const projectFilter = document.getElementById('projectFilter').value;
-      const tagFilter = document.getElementById('tagFilter').value.toLowerCase();
+      const tagFilter = document.getElementById('tagFilter').value;
       
       let filtered = [...records];
-      const now = new Date();
 
-      // 视图筛选
-      if (currentView === 'today') {
-        filtered = filtered.filter(r => new Date(r.date).toDateString() === now.toDateString());
-      } else if (currentView === 'week') {
-        const weekAgo = new Date(now);
-        weekAgo.setDate(now.getDate() - 7);
-        filtered = filtered.filter(r => new Date(r.date) >= weekAgo);
-      }
-
-      // 搜索文本筛选（优化匹配逻辑）
+      // 搜索文本筛选
       if (searchText) {
         filtered = filtered.filter(r => 
           r.title.toLowerCase().includes(searchText) || 
           r.content.toLowerCase().includes(searchText) ||
-          r.tags.some(tag => tag.toLowerCase().includes(searchText))
+          (r.tags && r.tags.some(tagId => {
+            const tag = tags.find(t => t.id.toString() === tagId);
+            return tag && tag.name.toLowerCase().includes(searchText);
+          }))
         );
       }
 
@@ -1005,7 +1838,7 @@
 
       // 标签筛选
       if (tagFilter) {
-        filtered = filtered.filter(r => r.tags.some(tag => tag.toLowerCase().includes(tagFilter)));
+        filtered = filtered.filter(r => r.tags && r.tags.includes(tagFilter));
       }
 
       // 按时间倒序排序
@@ -1014,7 +1847,6 @@
       render(filtered);
     });
 
-    // 重置筛选条件
     function resetFilters() {
       document.getElementById('searchInput').value = '';
       document.getElementById('projectFilter').value = '';
@@ -1043,10 +1875,14 @@
         const project = projects.find(p => p.id === r.projectId);
         const projectName = project ? project.name : '未分类';
         
+        const tagNames = (r.tags || []).map(tagId => {
+          const tag = tags.find(t => t.id.toString() === tagId);
+          return tag ? tag.name : '';
+        }).filter(name => name);
+        
         const div = document.createElement('div');
         div.className = 'record';
         
-        // 格式化日期显示
         const createTime = new Date(r.date).toLocaleString('zh-CN', {
           year: 'numeric',
           month: '2-digit',
@@ -1063,6 +1899,31 @@
           minute: '2-digit'
         }) : '';
         
+        let filesHtml = '';
+        if (r.files && r.files.length > 0) {
+          filesHtml = `<div style="margin:10px 0;">
+            <strong>附件 (${r.files.length})：</strong>
+            <div class="file-preview" style="margin-top:5px;">`;
+          
+          r.files.forEach(file => {
+            let filePreview = '';
+            if (file.type.startsWith('image/')) {
+              filePreview = `<img src="${file.data}" alt="${file.name}" style="max-width:80px; max-height:80px; cursor:pointer;" onclick="openImageViewer('${file.data}')" />`;
+            } else {
+              filePreview = `<div style="width:80px; height:80px; border:1px solid #eee; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer;" onclick="downloadFile('${file.data}', '${file.name}')">📄</div>`;
+            }
+            
+            filesHtml += `
+              <div style="text-align:center;">
+                ${filePreview}
+                <div style="font-size:10px; margin-top:5px;">${file.name}</div>
+              </div>
+            `;
+          });
+          
+          filesHtml += `</div></div>`;
+        }
+        
         div.innerHTML = `
           <h4>
             ${r.title}
@@ -1072,11 +1933,12 @@
           </h4>
           <div class="record-meta">
             <span class="tag tag-project">${projectName}</span>
-            ${r.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+            ${tagNames.map(t => `<span class="tag">${t}</span>`).join('')}
           </div>
           <div style="margin:10px 0; color:#555; line-height: 1.8;">
             ${r.content || '<span style="color:#999;">无内容</span>'}
           </div>
+          ${filesHtml}
           <div class="record-meta">
             <span>创建时间: ${createTime}</span>
             ${updateTime ? `<span>更新时间: ${updateTime}</span>` : ''}
@@ -1095,51 +1957,320 @@
       });
     }
 
-    // ========== 模态框管理优化 ==========
-    function closeModal() {
-      document.getElementById('editModal').style.display = 'none';
-      document.getElementById('projectModal').style.display = 'none';
+    function downloadFile(dataUrl, fileName) {
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
-    // ========== GitHub 同步功能（保持不变） ==========
-    function openGitHubSettings() {
-      const owner = prompt('GitHub 账户名', githubConfig.owner || '');
-      const repo = prompt('仓库名', githubConfig.repo || '');
-      const token = prompt('Personal Access Token (需要repo权限)', githubConfig.token || '');
+    // ========== 日历视图功能 ==========
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
       
-      if (owner && repo && token) {
-        githubConfig = { owner, repo, token };
-        localStorage.setItem('githubConfig', JSON.stringify(githubConfig));
-        showToast('GitHub 配置已保存！', 'success');
+      // 更新日历标题
+      document.getElementById('calendarTitle').textContent = `${year}年${month + 1}月`;
+      
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+      
+      // 添加星期标题
+      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+      weekdays.forEach(day => {
+        const weekdayDiv = document.createElement('div');
+        weekdayDiv.className = 'calendar-weekday';
+        weekdayDiv.textContent = day;
+        grid.appendChild(weekdayDiv);
+      });
+      
+      // 获取当月第一天和最后一天
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      
+      // 获取当月第一天是星期几
+      const firstDayWeekday = firstDay.getDay();
+      
+      // 获取上个月的最后几天
+      const prevMonthLastDay = new Date(year, month, 0).getDate();
+      
+      // 生成日历格子
+      let dayCount = 1;
+      let nextMonthDayCount = 1;
+      
+      for (let i = 0; i < 42; i++) { // 6行7列
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        
+        let currentDay;
+        let isCurrentMonth = true;
+        
+        if (i < firstDayWeekday) {
+          // 上个月的日期
+          currentDay = prevMonthLastDay - (firstDayWeekday - i - 1);
+          dayDiv.classList.add('other-month');
+          isCurrentMonth = false;
+        } else if (i >= firstDayWeekday + lastDay.getDate()) {
+          // 下个月的日期
+          currentDay = nextMonthDayCount++;
+          dayDiv.classList.add('other-month');
+          isCurrentMonth = false;
+        } else {
+          // 当前月的日期
+          currentDay = dayCount++;
+        }
+        
+        // 创建日期数字
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = currentDay;
+        
+        // 获取完整日期
+        const fullDate = new Date(isCurrentMonth ? year : (i < firstDayWeekday ? year : year + 1), 
+                                isCurrentMonth ? month : (i < firstDayWeekday ? month - 1 : month + 1), 
+                                currentDay);
+        
+        // 检查是否是今天
+        const today = new Date();
+        if (fullDate.toDateString() === today.toDateString()) {
+          dayDiv.classList.add('today');
+        }
+        
+        // 检查是否有记录
+        const dayRecords = getRecordsForDate(fullDate);
+        if (dayRecords.length > 0) {
+          dayDiv.classList.add('has-records');
+          
+          const recordCount = document.createElement('div');
+          recordCount.className = 'day-record-count';
+          recordCount.textContent = dayRecords.length;
+          dayDiv.appendChild(recordCount);
+        }
+        
+        // 添加点击事件
+        dayDiv.addEventListener('click', () => {
+          selectedDate = new Date(fullDate);
+          renderSelectedDateRecords();
+        });
+        
+        dayDiv.appendChild(dayNumber);
+        grid.appendChild(dayDiv);
       }
     }
 
-    async function syncToGitHub() {
-      const syncBtn = document.getElementById('syncBtn');
-      syncBtn.disabled = true;
-      syncBtn.innerHTML = '<span class="loader"></span> 同步中...';
+    function changeMonth(direction) {
+      currentDate.setMonth(currentDate.getMonth() + direction);
+      renderCalendar();
+    }
+
+    function goToToday() {
+      currentDate = new Date();
+      selectedDate = new Date();
+      renderCalendar();
+      renderSelectedDateRecords();
+    }
+
+    function getRecordsForDate(date) {
+      const dateStr = date.toDateString();
+      return records.filter(r => new Date(r.date).toDateString() === dateStr);
+    }
+
+    function renderSelectedDateRecords() {
+      const title = document.getElementById('selectedDateTitle');
+      const recordsContainer = document.getElementById('selectedDateRecords');
+      
+      // 格式化日期显示
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth() + 1;
+      const day = selectedDate.getDate();
+      title.textContent = `${year}年${month}月${day}日的记录`;
+      
+      // 获取选中日期的记录
+      const dayRecords = getRecordsForDate(selectedDate);
+      
+      if (dayRecords.length === 0) {
+        recordsContainer.innerHTML = `
+          <div class="empty-state">
+            <div>📭</div>
+            <h4>暂无记录</h4>
+            <p>点击"添加记录"按钮创建该日期的第一条工作记录吧</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // 按时间倒序排序
+      dayRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      recordsContainer.innerHTML = '';
+      dayRecords.forEach(r => {
+        const project = projects.find(p => p.id === r.projectId);
+        const projectName = project ? project.name : '未分类';
+        
+        const tagNames = (r.tags || []).map(tagId => {
+          const tag = tags.find(t => t.id.toString() === tagId);
+          return tag ? tag.name : '';
+        }).filter(name => name);
+        
+        const div = document.createElement('div');
+        div.className = 'record';
+        
+        const createTime = new Date(r.date).toLocaleString('zh-CN', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        const updateTime = r.updateTime ? new Date(r.updateTime).toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }) : '';
+        
+        let filesHtml = '';
+        if (r.files && r.files.length > 0) {
+          filesHtml = `<div style="margin:10px 0;">
+            <strong>附件 (${r.files.length})：</strong>
+            <div class="file-preview" style="margin-top:5px;">`;
+          
+          r.files.forEach(file => {
+            let filePreview = '';
+            if (file.type.startsWith('image/')) {
+              filePreview = `<img src="${file.data}" alt="${file.name}" style="max-width:80px; max-height:80px; cursor:pointer;" onclick="openImageViewer('${file.data}')" />`;
+            } else {
+              filePreview = `<div style="width:80px; height:80px; border:1px solid #eee; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer;" onclick="downloadFile('${file.data}', '${file.name}')">📄</div>`;
+            }
+            
+            filesHtml += `
+              <div style="text-align:center;">
+                ${filePreview}
+                <div style="font-size:10px; margin-top:5px;">${file.name}</div>
+              </div>
+            `;
+          });
+          
+          filesHtml += `</div></div>`;
+        }
+        
+        div.innerHTML = `
+          <h4>
+            ${r.title}
+            <span style="font-size: 12px; font-weight: normal; color: #7f8c8d;">
+              ${createTime}
+            </span>
+          </h4>
+          <div class="record-meta">
+            <span class="tag tag-project">${projectName}</span>
+            ${tagNames.map(t => `<span class="tag">${t}</span>`).join('')}
+          </div>
+          <div style="margin:10px 0; color:#555; line-height: 1.8;">
+            ${r.content || '<span style="color:#999;">无内容</span>'}
+          </div>
+          ${filesHtml}
+          ${updateTime ? `<div class="record-meta"><span>更新时间: ${updateTime}</span></div>` : ''}
+          <div style="margin-top:15px;">
+            <button class="btn btn-primary" onclick="editRecord(${r.id})">
+              <span>✏️</span> 编辑
+            </button>
+            <button class="btn btn-danger" onclick="deleteRecord(${r.id})">
+              <span>🗑️</span> 删除
+            </button>
+          </div>
+        `;
+        
+        recordsContainer.appendChild(div);
+      });
+    }
+
+    // ========== 模态框管理 ==========
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+      document.getElementById('addRecordModal').style.display = 'none';
+      document.getElementById('projectModal').style.display = 'none';
+      document.getElementById('tagModal').style.display = 'none';
+      document.getElementById('githubModal').style.display = 'none';
+      
+      editUploadedFiles = [];
+      addDateUploadedFiles = [];
+    }
+
+    // ========== GitHub 功能（自动同步） ==========
+    function openGitHubSettings() {
+      document.getElementById('githubModal').style.display = 'flex';
+    }
+
+    function loadGitHubConfig() {
+      document.getElementById('githubOwner').value = githubConfig.owner || '';
+      document.getElementById('githubRepo').value = githubConfig.repo || '';
+      document.getElementById('githubToken').value = githubConfig.token || '';
+      document.getElementById('autoSyncToggle').checked = githubConfig.autoSync === true;
+      document.getElementById('autoPullToggle').checked = githubConfig.autoPull === true;
+    }
+
+    function saveGitHubConfig() {
+      const owner = document.getElementById('githubOwner').value.trim();
+      const repo = document.getElementById('githubRepo').value.trim();
+      const token = document.getElementById('githubToken').value.trim();
+      const autoSync = document.getElementById('autoSyncToggle').checked;
+      const autoPull = document.getElementById('autoPullToggle').checked;
+      
+      if (!owner || !repo || !token) {
+        showToast('请填写完整的GitHub配置信息！', 'error');
+        return;
+      }
+      
+      githubConfig = { owner, repo, token, autoSync, autoPull };
+      localStorage.setItem('githubConfig', JSON.stringify(githubConfig));
+      
+      checkAutoSyncSettings();
+      
+      closeModal();
+      showToast('GitHub配置已保存！', 'success');
+    }
+
+    function checkAutoSyncSettings() {
+      if (autoSyncInterval) {
+        clearInterval(autoSyncInterval);
+        autoSyncInterval = null;
+      }
+      
+      if (githubConfig.autoSync === true && githubConfig.owner && githubConfig.repo && githubConfig.token) {
+        autoSyncInterval = setInterval(() => {
+          syncToGitHub(true);
+        }, AUTO_SYNC_INTERVAL);
+        
+        showToast('自动同步已启用（每30分钟）', 'info');
+      }
+    }
+
+    async function syncToGitHub(silent = false) {
+      if (!silent) {
+        const syncBtn = document.getElementById('syncBtn');
+        syncBtn.disabled = true;
+        syncBtn.innerHTML = '<span class="loader"></span> 同步中...';
+      }
       
       try {
         if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
-          showToast('请先配置 GitHub 设置！', 'error');
-          syncBtn.disabled = false;
-          syncBtn.innerHTML = '<span>☁️</span> 同步到GitHub';
+          if (!silent) showToast('请先配置 GitHub 设置！', 'error');
           return;
         }
 
-        // 准备要同步的数据
         const syncData = {
           records,
           projects,
-          syncTime: new Date().toISOString()
+          tags,
+          syncTime: new Date().toISOString(),
+          version: '2.1.0'
         };
 
-        // 转换为Base64编码
         const content = btoa(unescape(encodeURIComponent(JSON.stringify(syncData, null, 2))));
         const path = 'worklog_backup.json';
         const url = `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${path}`;
 
-        // 检查文件是否存在，获取SHA值
         let sha = undefined;
         const res = await fetch(url);
         if (res.ok) {
@@ -1147,7 +2278,6 @@
           sha = data.sha;
         }
 
-        // 上传/更新文件
         const response = await fetch(url, {
           method: 'PUT',
           headers: {
@@ -1162,36 +2292,107 @@
         });
 
         if (response.ok) {
-          showToast('✅ 同步到GitHub成功！', 'success');
+          if (!silent) showToast('✅ 同步到GitHub成功！', 'success');
         } else {
           const error = await response.json();
-          showToast(`❌ 同步失败：${error.message}`, 'error');
+          if (!silent) showToast(`❌ 同步失败：${error.message}`, 'error');
         }
       } catch (error) {
-        showToast(`❌ 同步出错：${error.message}`, 'error');
+        if (!silent) showToast(`❌ 同步出错：${error.message}`, 'error');
       } finally {
-        syncBtn.disabled = false;
-        syncBtn.innerHTML = '<span>☁️</span> 同步到GitHub';
+        if (!silent) {
+          const syncBtn = document.getElementById('syncBtn');
+          syncBtn.disabled = false;
+          syncBtn.innerHTML = '<span>☁️</span> 同步到GitHub';
+        }
       }
     }
 
-    // ========== 本地导入导出优化 ==========
+    async function syncFromGitHub(silent = false) {
+      if (!silent) {
+        const pullBtn = document.getElementById('pullBtn');
+        pullBtn.disabled = true;
+        pullBtn.innerHTML = '<span class="loader"></span> 更新中...';
+      }
+      
+      try {
+        if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
+          if (!silent) showToast('请先配置 GitHub 设置！', 'error');
+          return;
+        }
+
+        const path = 'worklog_backup.json';
+        const url = `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${path}`;
+
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `token ${githubConfig.token}`
+          }
+        });
+
+        if (!response.ok) {
+          if (!silent) showToast('❌ 未找到备份文件', 'error');
+          return;
+        }
+
+        const data = await response.json();
+        const content = decodeURIComponent(escape(atob(data.content)));
+        const syncData = JSON.parse(content);
+
+        if (!syncData.records || !Array.isArray(syncData.records)) {
+          if (!silent) showToast('❌ 备份文件格式不正确', 'error');
+          return;
+        }
+        
+        if (!silent && !confirm('⚠️ 从GitHub更新会覆盖本地数据，确定要继续吗？')) {
+          return;
+        }
+
+        records = syncData.records || [];
+        projects = syncData.projects || [];
+        tags = syncData.tags || [];
+        
+        saveRecords();
+        saveProjects();
+        saveTags();
+        renderProjects();
+        renderTags();
+        render();
+        
+        // 如果在日历视图中，更新日历和选中日期的记录
+        if (currentView === 'calendar') {
+          renderCalendar();
+          renderSelectedDateRecords();
+        }
+        
+        if (!silent) showToast('✅ 从GitHub更新成功！', 'success');
+      } catch (error) {
+        if (!silent) showToast(`❌ 更新出错：${error.message}`, 'error');
+      } finally {
+        if (!silent) {
+          const pullBtn = document.getElementById('pullBtn');
+          pullBtn.disabled = false;
+          pullBtn.innerHTML = '<span>⬇️</span> 从GitHub更新';
+        }
+      }
+    }
+
+    // ========== 本地导入导出 ==========
     function exportLocal() {
       try {
         const exportData = {
           records,
           projects,
+          tags,
           exportTime: new Date().toISOString(),
-          version: '1.0.0'
+          version: '2.1.0'
         };
 
         const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        
-        // 优化文件名格式
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-        a.download = `工作记录备份_${dateStr}.json`;
+        a.download = `Work-log备份_${dateStr}.json`;
         
         a.click();
         URL.revokeObjectURL(a.href);
@@ -1210,7 +2411,6 @@
         const file = e.target.files[0];
         if (!file) return;
         
-        // 验证文件类型
         if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
           showToast('请选择JSON格式的备份文件！', 'error');
           return;
@@ -1221,7 +2421,6 @@
           try {
             const importedData = JSON.parse(reader.result);
             
-            // 验证备份文件格式
             if (!importedData.records || !Array.isArray(importedData.records)) {
               showToast('备份文件格式不正确！', 'error');
               return;
@@ -1230,10 +2429,21 @@
             if (confirm('⚠️ 导入会覆盖现有数据，确定要继续吗？')) {
               records = importedData.records || [];
               projects = importedData.projects || [];
+              tags = importedData.tags || [];
               
               saveRecords();
               saveProjects();
+              saveTags();
+              renderProjects();
+              renderTags();
               render();
+              
+              // 如果在日历视图中，更新日历和选中日期的记录
+              if (currentView === 'calendar') {
+                renderCalendar();
+                renderSelectedDateRecords();
+              }
+              
               showToast('✅ 导入成功！', 'success');
             }
           } catch (error) {
@@ -1247,5 +2457,5 @@
       input.click();
     }
   </script>
-</body>
-</html>
+
+</body></html>
