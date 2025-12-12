@@ -4,8 +4,748 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>工作记录</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 应用容器 */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 280px;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .sidebar-content h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 视图切换 */
+        .view-section {
+            margin-bottom: 30px;
+        }
+
+        .view-list {
+            list-style: none;
+        }
+
+        .view-item {
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .view-item:hover {
+            background-color: #34495e;
+        }
+
+        .view-item.active {
+            background-color: #3498db;
+        }
+
+        .view-item i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        /* 项目和标签通用样式 */
+        .projects-section,
+        .tags-section {
+            margin-bottom: 30px;
+        }
+
+        .projects-header,
+        .tags-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .add-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .add-btn:hover {
+            background-color: #2980b9;
+            transform: rotate(90deg);
+        }
+
+        /* 项目列表 */
+        .projects-list {
+            list-style: none;
+        }
+
+        .project-item {
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            background-color: #34495e;
+        }
+
+        .project-item:hover {
+            background-color: #3a5065;
+        }
+
+        .project-item.active {
+            background-color: #3498db;
+        }
+
+        .project-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* 标签列表 */
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-item {
+            background-color: #34495e;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tag-item:hover {
+            background-color: #3498db;
+        }
+
+        .tag-item.active {
+            background-color: #e74c3c;
+        }
+
+        /* GitHub设置 */
+        .github-section {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #34495e;
+        }
+
+        .github-form {
+            background-color: #34495e;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #4a6178;
+            border-radius: 4px;
+            background-color: #2c3e50;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .save-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .save-btn:hover {
+            background-color: #229954;
+        }
+
+        .sync-btn {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .sync-btn:hover:not(:disabled) {
+            background-color: #d35400;
+        }
+
+        .sync-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .add-record-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .add-record-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .add-record-btn i {
+            margin-right: 8px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #95a5a6;
+        }
+
+        .search-box input {
+            padding: 10px 12px 10px 35px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 300px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3498db;
+            width: 350px;
+        }
+
+        /* 记录容器 */
+        .records-container {
+            max-width: 1000px;
+        }
+
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .records-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .record-count {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        /* 记录列表 */
+        .records-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .record-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .record-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .record-card.important {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .record-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .record-date {
+            display: flex;
+            align-items: center;
+        }
+
+        .record-date i {
+            margin-right: 5px;
+        }
+
+        .record-project {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .record-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .record-content {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .record-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .record-tag {
+            background-color: #ecf0f1;
+            color: #34495e;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .record-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .edit-btn,
+        .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .edit-btn {
+            color: #3498db;
+        }
+
+        .edit-btn:hover {
+            background-color: #ebf5fb;
+        }
+
+        .delete-btn {
+            color: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background-color: #fdecea;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: #7f8c8d;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background-color: #f5f5f5;
+            color: #2c3e50;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .cancel-btn {
+            background-color: #ecf0f1;
+            color: #34495e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .cancel-btn:hover {
+            background-color: #bdc3c7;
+        }
+
+        /* 标签输入 */
+        .tags-input {
+            margin-bottom: 10px;
+        }
+
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .selected-tag {
+            background-color: #3498db;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .selected-tag i {
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* MiniMax Agent 浮动球 */
+        #minimax-floating-ball {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .minimax-ball-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .minimax-logo-wave {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .minimax-ball-text {
+            font-size: 12px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .minimax-close-icon {
+            margin-left: 8px;
+            font-size: 16px;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .minimax-close-icon:hover {
+            opacity: 1;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .search-box input:focus {
+                width: 100%;
+            }
+            
+            .records-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar-content {
+                padding: 15px;
+            }
+            
+            .main-content {
+                padding: 10px;
+            }
+            
+            .add-record-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .save-btn,
+            .cancel-btn {
+                width: 100%;
+            }
+        }
+
+        /* 无记录样式 */
+        .no-records {
+            text-align: center;
+            color: #95a5a6;
+            padding: 50px 0;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -37,7 +777,7 @@
                     <h2>项目</h2>
                     <div class="projects-header">
                         <span>项目列表</span>
-                        <button class="add-btn" id="addProjectBtn">
+                        <button class="add-btn" id="addProjectBtn" onclick="openProjectModal()">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
@@ -51,7 +791,7 @@
                     <h2>标签</h2>
                     <div class="tags-header">
                         <span>标签列表</span>
-                        <button class="add-btn" id="addTagBtn">
+                        <button class="add-btn" id="addTagBtn" onclick="openTagModal()">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
@@ -78,8 +818,8 @@
                             <label for="githubToken">Personal Access Token</label>
                             <input type="password" id="githubToken" placeholder="需要repo权限">
                         </div>
-                        <button class="save-btn" id="saveGitHubConfig">保存配置</button>
-                        <button class="sync-btn" id="syncToGitHub" disabled>同步到GitHub</button>
+                        <button class="save-btn" id="saveGitHubConfig" onclick="saveGithubConfig()">保存配置</button>
+                        <button class="sync-btn" id="syncToGitHub" disabled onclick="syncWithGithub()">同步到GitHub</button>
                     </div>
                 </div>
             </div>
@@ -90,14 +830,14 @@
             <!-- 顶部工具栏 -->
             <div class="toolbar">
                 <div class="toolbar-left">
-                    <button class="add-record-btn" id="addRecordBtn">
+                    <button class="add-record-btn" id="addRecordBtn" onclick="openRecordModal()">
                         <i class="fas fa-plus"></i> 新增记录
                     </button>
                 </div>
                 <div class="toolbar-right">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="搜索记录...">
+                        <input type="text" id="searchInput" placeholder="搜索记录..." oninput="handleSearch(event)">
                     </div>
                 </div>
             </div>
@@ -119,12 +859,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 id="modalTitle">新增记录</h3>
-                    <button class="close-btn" id="closeModal">
+                    <button class="close-btn" id="closeModal" onclick="closeAllModals()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="recordForm">
+                    <form id="recordForm" onsubmit="handleRecordSubmit(event)">
+                        <input type="hidden" id="recordId">
                         <div class="form-group">
                             <label for="recordTitle">标题</label>
                             <input type="text" id="recordTitle" required>
@@ -143,7 +884,7 @@
                         <div class="form-group">
                             <label for="recordTags">标签</label>
                             <div class="tags-input" id="tagsInput">
-                                <input type="text" id="tagInput" placeholder="添加标签...">
+                                <input type="text" id="tagInput" placeholder="添加标签..." onkeypress="handleTagInput(event)">
                             </div>
                             <div class="selected-tags" id="selectedTags"></div>
                         </div>
@@ -154,8 +895,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="cancel-btn" id="cancelModal">取消</button>
-                    <button class="save-btn" id="saveRecord">保存</button>
+                    <button class="cancel-btn" id="cancelModal" onclick="closeAllModals()">取消</button>
+                    <button class="save-btn" id="saveRecord" onclick="document.getElementById('recordForm').submit()">保存</button>
                 </div>
             </div>
         </div>
@@ -165,12 +906,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>新增项目</h3>
-                    <button class="close-btn" id="closeProjectModal">
+                    <button class="close-btn" id="closeProjectModal" onclick="closeAllModals()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="projectForm">
+                    <form id="projectForm" onsubmit="handleProjectSubmit(event)">
                         <div class="form-group">
                             <label for="projectName">项目名称</label>
                             <input type="text" id="projectName" required>
@@ -182,8 +923,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="cancel-btn" id="cancelProjectModal">取消</button>
-                    <button class="save-btn" id="saveProject">保存</button>
+                    <button class="cancel-btn" id="cancelProjectModal" onclick="closeAllModals()">取消</button>
+                    <button class="save-btn" id="saveProject" onclick="document.getElementById('projectForm').submit()">保存</button>
                 </div>
             </div>
         </div>
@@ -193,12 +934,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>新增标签</h3>
-                    <button class="close-btn" id="closeTagModal">
+                    <button class="close-btn" id="closeTagModal" onclick="closeAllModals()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="tagForm">
+                    <form id="tagForm" onsubmit="handleTagSubmit(event)">
                         <div class="form-group">
                             <label for="tagName">标签名称</label>
                             <input type="text" id="tagName" required>
@@ -206,8 +947,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="cancel-btn" id="cancelTagModal">取消</button>
-                    <button class="save-btn" id="saveTag">保存</button>
+                    <button class="cancel-btn" id="cancelTagModal" onclick="closeAllModals()">取消</button>
+                    <button class="save-btn" id="saveTag" onclick="document.getElementById('tagForm').submit()">保存</button>
                 </div>
             </div>
         </div>
@@ -222,6 +963,657 @@
         <div class="minimax-close-icon">×</div>
     </div>
     
-    <script src="script.js"></script>
+    <script>
+        // 全局变量
+        let currentView = 'all';
+        let currentProject = null;
+        let currentTag = null;
+        let currentSearch = '';
+        let records = [];
+        let projects = [];
+        let tags = [];
+        let githubConfig = {
+            accessToken: '',
+            repo: '',
+            branch: 'main',
+            path: 'worklog'
+        };
+
+        // DOM元素
+        const addRecordBtn = document.getElementById('addRecordBtn');
+        const searchInput = document.getElementById('searchInput');
+        const recordsList = document.getElementById('recordsList');
+        const recordCount = document.getElementById('recordCount');
+
+        // 模态框元素
+        const recordModal = document.getElementById('recordModal');
+        const recordForm = document.getElementById('recordForm');
+        const projectModal = document.getElementById('projectModal');
+        const projectForm = document.getElementById('projectForm');
+        const tagModal = document.getElementById('tagModal');
+        const tagForm = document.getElementById('tagForm');
+
+        // 初始化
+        function init() {
+            // 加载数据
+            loadData();
+            
+            // 绑定事件
+            bindEvents();
+            
+            // 渲染界面
+            renderAll();
+            
+            // 初始化MiniMax浮动球
+            initMiniMaxBall();
+        }
+
+        // 加载数据
+        function loadData() {
+            // 从localStorage加载数据
+            const savedRecords = localStorage.getItem('worklog-records');
+            const savedProjects = localStorage.getItem('worklog-projects');
+            const savedTags = localStorage.getItem('worklog-tags');
+            const savedGithubConfig = localStorage.getItem('worklog-github-config');
+            
+            records = savedRecords ? JSON.parse(savedRecords) : [];
+            projects = savedProjects ? JSON.parse(savedProjects) : [];
+            tags = savedTags ? JSON.parse(savedTags) : [];
+            githubConfig = savedGithubConfig ? JSON.parse(savedGithubConfig) : githubConfig;
+            
+            // 如果没有项目，创建默认项目
+            if (projects.length === 0) {
+                projects.push({
+                    id: 'default',
+                    name: '默认项目',
+                    color: '#3498db'
+                });
+                saveData();
+            }
+        }
+
+        // 保存数据
+        function saveData() {
+            localStorage.setItem('worklog-records', JSON.stringify(records));
+            localStorage.setItem('worklog-projects', JSON.stringify(projects));
+            localStorage.setItem('worklog-tags', JSON.stringify(tags));
+            localStorage.setItem('worklog-github-config', JSON.stringify(githubConfig));
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 视图切换
+            const viewItems = document.querySelectorAll('.view-item');
+            viewItems.forEach(item => {
+                item.addEventListener('click', handleViewChange);
+            });
+        }
+
+        // 渲染所有内容
+        function renderAll() {
+            renderProjects();
+            renderTags();
+            renderRecords();
+            renderGithubForm();
+        }
+
+        // 渲染项目列表
+        function renderProjects() {
+            const projectsList = document.getElementById('projectsList');
+            const projectSelect = document.getElementById('recordProject');
+            
+            projectsList.innerHTML = '';
+            projectSelect.innerHTML = '<option value="">无项目</option>';
+            
+            projects.forEach(project => {
+                // 渲染项目列表
+                const li = document.createElement('li');
+                li.className = `project-item ${currentProject === project.id ? 'active' : ''}`;
+                li.dataset.id = project.id;
+                li.innerHTML = `
+                    <div class="project-color" style="background-color: ${project.color}"></div>
+                    ${project.name}
+                `;
+                li.onclick = () => handleProjectChange(project.id);
+                projectsList.appendChild(li);
+                
+                // 渲染项目选择下拉框
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.name;
+                projectSelect.appendChild(option);
+            });
+        }
+
+        // 渲染标签列表
+        function renderTags() {
+            const tagsList = document.getElementById('tagsList');
+            tagsList.innerHTML = '';
+            
+            tags.forEach(tag => {
+                const div = document.createElement('div');
+                div.className = `tag-item ${currentTag === tag ? 'active' : ''}`;
+                div.dataset.name = tag;
+                div.textContent = tag;
+                div.onclick = () => handleTagChange(tag);
+                tagsList.appendChild(div);
+            });
+        }
+
+        // 渲染记录列表
+        function renderRecords() {
+            // 筛选记录
+            let filteredRecords = records;
+            
+            if (currentView === 'today') {
+                const today = new Date().toDateString();
+                filteredRecords = filteredRecords.filter(record => 
+                    new Date(record.date).toDateString() === today
+                );
+            } else if (currentView === 'week') {
+                const now = new Date();
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filteredRecords = filteredRecords.filter(record => 
+                    new Date(record.date) >= weekAgo
+                );
+            }
+            
+            if (currentProject) {
+                filteredRecords = filteredRecords.filter(record => 
+                    record.projectId === currentProject
+                );
+            }
+            
+            if (currentTag) {
+                filteredRecords = filteredRecords.filter(record => 
+                    record.tags.includes(currentTag)
+                );
+            }
+            
+            if (currentSearch) {
+                const searchLower = currentSearch.toLowerCase();
+                filteredRecords = filteredRecords.filter(record => 
+                    record.title.toLowerCase().includes(searchLower) ||
+                    record.content.toLowerCase().includes(searchLower)
+                );
+            }
+            
+            // 按日期排序
+            filteredRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // 渲染记录
+            recordsList.innerHTML = '';
+            
+            if (filteredRecords.length === 0) {
+                recordsList.innerHTML = '<p class="no-records">暂无记录</p>';
+            } else {
+                filteredRecords.forEach(record => {
+                    const recordElement = createRecordElement(record);
+                    recordsList.appendChild(recordElement);
+                });
+            }
+            
+            // 更新记录数
+            recordCount.textContent = `共 ${filteredRecords.length} 条记录`;
+        }
+
+        // 创建记录元素
+        function createRecordElement(record) {
+            const div = document.createElement('div');
+            div.className = `record-card ${record.important ? 'important' : ''}`;
+            
+            const project = projects.find(p => p.id === record.projectId) || null;
+            
+            div.innerHTML = `
+                <div class="record-meta">
+                    <div class="record-date">
+                        <i class="far fa-calendar"></i>
+                        ${formatDate(record.date)}
+                    </div>
+                    ${project ? `<div class="record-project" style="background-color: ${project.color}">${project.name}</div>` : ''}
+                </div>
+                <h3 class="record-title">${record.title}</h3>
+                <p class="record-content">${record.content}</p>
+                <div class="record-tags">
+                    ${record.tags.map(tag => `<span class="record-tag">${tag}</span>`).join('')}
+                </div>
+                <div class="record-actions">
+                    <button class="edit-btn" onclick="editRecord('${record.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="delete-btn" onclick="deleteRecord('${record.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // 渲染GitHub表单
+        function renderGithubForm() {
+            document.getElementById('githubToken').value = githubConfig.accessToken;
+            document.getElementById('githubRepo').value = githubConfig.repo;
+            document.getElementById('githubOwner').value = githubConfig.owner || '';
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // 打开记录模态框
+        function openRecordModal() {
+            recordForm.reset();
+            document.getElementById('recordId').value = '';
+            document.getElementById('modalTitle').textContent = '添加记录';
+            document.getElementById('recordDate') ? document.getElementById('recordDate').value = new Date().toISOString().slice(0, 16) : null;
+            document.getElementById('recordProject').value = currentProject || '';
+            document.getElementById('selectedTags').innerHTML = '';
+            recordModal.classList.add('show');
+        }
+
+        // 编辑记录
+        function editRecord(id) {
+            const record = records.find(r => r.id === id);
+            if (!record) return;
+            
+            document.getElementById('recordId').value = record.id;
+            document.getElementById('modalTitle').textContent = '编辑记录';
+            document.getElementById('recordTitle').value = record.title;
+            document.getElementById('recordContent').value = record.content;
+            document.getElementById('recordDate') ? document.getElementById('recordDate').value = record.date.slice(0, 16) : null;
+            document.getElementById('recordProject').value = record.projectId || '';
+            document.getElementById('recordImportant').checked = record.important || false;
+            
+            // 获取选中的标签
+            const selectedTags = document.getElementById('selectedTags');
+            selectedTags.innerHTML = '';
+            record.tags.forEach(tag => {
+                addSelectedTag(tag);
+            });
+            
+            recordModal.classList.add('show');
+        }
+
+        // 删除记录
+        function deleteRecord(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                records = records.filter(r => r.id !== id);
+                saveData();
+                renderRecords();
+            }
+        }
+
+        // 处理记录表单提交
+        function handleRecordSubmit(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('recordId').value;
+            const title = document.getElementById('recordTitle').value;
+            const content = document.getElementById('recordContent').value;
+            const date = document.getElementById('recordDate') ? document.getElementById('recordDate').value : new Date().toISOString();
+            const projectId = document.getElementById('recordProject').value;
+            const important = document.getElementById('recordImportant').checked;
+            
+            // 获取选中的标签
+            const selectedTags = Array.from(document.querySelectorAll('.selected-tag'))
+                .map(tag => tag.dataset.name);
+            
+            if (!title.trim()) {
+                alert('请输入记录标题');
+                return;
+            }
+            
+            if (id) {
+                // 编辑记录
+                const recordIndex = records.findIndex(r => r.id === id);
+                if (recordIndex !== -1) {
+                    records[recordIndex] = {
+                        ...records[recordIndex],
+                        title,
+                        content,
+                        date,
+                        projectId,
+                        important,
+                        tags: selectedTags
+                    };
+                }
+            } else {
+                // 添加记录
+                records.push({
+                    id: Date.now().toString(),
+                    title,
+                    content,
+                    date,
+                    projectId,
+                    important,
+                    tags: selectedTags,
+                    createdAt: new Date().toISOString()
+                });
+            }
+            
+            // 保存数据
+            saveData();
+            
+            // 关闭模态框
+            closeAllModals();
+            
+            // 重新渲染
+            renderRecords();
+            renderTags();
+        }
+
+        // 打开项目模态框
+        function openProjectModal() {
+            projectForm.reset();
+            projectModal.classList.add('show');
+        }
+
+        // 处理项目表单提交
+        function handleProjectSubmit(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('projectName').value;
+            const color = document.getElementById('projectColor').value;
+            
+            if (!name.trim()) {
+                alert('请输入项目名称');
+                return;
+            }
+            
+            // 检查项目是否已存在
+            if (projects.some(p => p.name === name)) {
+                alert('项目已存在');
+                return;
+            }
+            
+            // 添加项目
+            projects.push({
+                id: Date.now().toString(),
+                name,
+                color
+            });
+            
+            // 保存数据
+            saveData();
+            
+            // 关闭模态框
+            closeAllModals();
+            
+            // 重新渲染
+            renderAll();
+        }
+
+        // 打开标签模态框
+        function openTagModal() {
+            tagForm.reset();
+            tagModal.classList.add('show');
+        }
+
+        // 处理标签表单提交
+        function handleTagSubmit(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('tagName').value.trim();
+            
+            if (!name) {
+                alert('请输入标签名称');
+                return;
+            }
+            
+            // 检查标签是否已存在
+            if (tags.includes(name)) {
+                alert('标签已存在');
+                return;
+            }
+            
+            // 添加标签
+            tags.push(name);
+            
+            // 保存数据
+            saveData();
+            
+            // 关闭模态框
+            closeAllModals();
+            
+            // 重新渲染
+            renderTags();
+        }
+
+        // 保存GitHub配置
+        function saveGithubConfig() {
+            const accessToken = document.getElementById('githubToken').value;
+            const repo = document.getElementById('githubRepo').value;
+            const owner = document.getElementById('githubOwner').value;
+            
+            if (!accessToken || !repo || !owner) {
+                alert('请填写完整的GitHub信息');
+                return;
+            }
+            
+            // 保存配置
+            githubConfig = {
+                ...githubConfig,
+                accessToken,
+                repo,
+                owner
+            };
+            
+            // 保存到localStorage
+            localStorage.setItem('worklog-github-config', JSON.stringify(githubConfig));
+            
+            alert('GitHub配置已保存');
+        }
+
+        // 同步到GitHub
+        function syncWithGithub() {
+            if (!githubConfig.accessToken || !githubConfig.repo || !githubConfig.owner) {
+                alert('请先配置GitHub信息');
+                return;
+            }
+            
+            const syncBtn = document.getElementById('syncToGitHub');
+            syncBtn.disabled = true;
+            syncBtn.textContent = '同步中...';
+            
+            // 准备要同步的数据
+            const syncData = {
+                records,
+                projects,
+                tags,
+                lastSync: new Date().toISOString()
+            };
+            
+            // 将数据转换为Markdown格式
+            const markdownContent = generateMarkdown(syncData);
+            
+            // 创建文件名
+            const fileName = `${new Date().toISOString().slice(0, 10)}-worklog.md`;
+            
+            // 这里应该实现GitHub API调用
+            // 由于实际环境限制，这里只是模拟同步
+            setTimeout(() => {
+                alert('同步成功！（模拟）');
+                syncBtn.disabled = false;
+                syncBtn.textContent = '同步到GitHub';
+            }, 1500);
+        }
+
+        // 生成Markdown内容
+        function generateMarkdown(data) {
+            let markdown = '# 工作记录\n\n';
+            markdown += `*最后同步时间：${data.lastSync}*\n\n`;
+            
+            // 按项目分组记录
+            const recordsByProject = {};
+            data.records.forEach(record => {
+                if (!recordsByProject[record.projectId]) {
+                    recordsByProject[record.projectId] = [];
+                }
+                recordsByProject[record.projectId].push(record);
+            });
+            
+            // 生成项目部分
+            Object.keys(recordsByProject).forEach(projectId => {
+                const project = data.projects.find(p => p.id === projectId);
+                markdown += `## ${project ? project.name : '未分类'}\n\n`;
+                
+                // 按日期排序记录
+                const projectRecords = recordsByProject[projectId].sort((a, b) => 
+                    new Date(b.date) - new Date(a.date)
+                );
+                
+                projectRecords.forEach(record => {
+                    markdown += `### ${record.title}\n`;
+                    markdown += `**日期：** ${formatDate(record.date)}\n`;
+                    if (record.important) {
+                        markdown += `**重要：** ✅\n`;
+                    }
+                    if (record.tags.length > 0) {
+                        markdown += `**标签：** ${record.tags.join(', ')}\n`;
+                    }
+                    markdown += `\n${record.content}\n\n`;
+                });
+            });
+            
+            return markdown;
+        }
+
+        // 处理视图切换
+        function handleViewChange(e) {
+            // 移除所有活跃状态
+            document.querySelectorAll('.view-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 添加活跃状态
+            e.target.closest('.view-item').classList.add('active');
+            
+            // 更新当前视图
+            currentView = e.target.closest('.view-item').dataset.view;
+            
+            // 重置其他筛选条件
+            currentProject = null;
+            currentTag = null;
+            currentSearch = '';
+            searchInput.value = '';
+            
+            // 重新渲染
+            renderAll();
+        }
+
+        // 处理项目切换
+        function handleProjectChange(projectId) {
+            currentProject = currentProject === projectId ? null : projectId;
+            renderAll();
+        }
+
+        // 处理标签切换
+        function handleTagChange(tagName) {
+            currentTag = currentTag === tagName ? null : tagName;
+            renderAll();
+        }
+
+        // 处理搜索
+        function handleSearch(e) {
+            currentSearch = e.target.value;
+            renderRecords();
+        }
+
+        // 处理标签输入
+        function handleTagInput(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const tagName = e.target.value.trim();
+                
+                if (tagName && !tags.includes(tagName)) {
+                    tags.push(tagName);
+                    saveData();
+                    renderTags();
+                    addSelectedTag(tagName);
+                } else if (tagName && tags.includes(tagName)) {
+                    addSelectedTag(tagName);
+                }
+                
+                e.target.value = '';
+            }
+        }
+
+        // 添加选中的标签
+        function addSelectedTag(tagName) {
+            const selectedTags = document.getElementById('selectedTags');
+            
+            // 检查标签是否已选中
+            if (Array.from(selectedTags.querySelectorAll('.selected-tag'))
+                .some(tag => tag.dataset.name === tagName)) {
+                return;
+            }
+            
+            const tagElement = document.createElement('span');
+            tagElement.className = 'selected-tag';
+            tagElement.dataset.name = tagName;
+            tagElement.innerHTML = `${tagName} <i class="fas fa-times"></i>`;
+            
+            // 绑定删除事件
+            tagElement.querySelector('i').addEventListener('click', () => {
+                tagElement.remove();
+            });
+            
+            selectedTags.appendChild(tagElement);
+        }
+
+        // 关闭所有模态框
+        function closeAllModals() {
+            recordModal.classList.remove('show');
+            projectModal.classList.remove('show');
+            tagModal.classList.remove('show');
+            
+            // 重置表单
+            recordForm.reset();
+            projectForm.reset();
+            tagForm.reset();
+            
+            // 清空选中的标签
+            document.getElementById('selectedTags').innerHTML = '';
+        }
+
+        // 初始化MiniMax浮动球
+        function initMiniMaxBall() {
+            const ball = document.getElementById('minimax-floating-ball');
+            if (!ball) return;
+            
+            // 添加动画效果
+            ball.addEventListener('mouseenter', () => {
+                ball.style.transform = 'scale(1.1)';
+            });
+            
+            ball.addEventListener('mouseleave', () => {
+                ball.style.transform = 'scale(1)';
+            });
+            
+            // 添加点击事件
+            ball.addEventListener('click', () => {
+                // 可以添加更多功能
+                alert('感谢使用MiniMax Agent创建的工作记录网站！');
+            });
+            
+            // 关闭按钮事件
+            const closeIcon = ball.querySelector('.minimax-close-icon');
+            closeIcon.addEventListener('click', () => {
+                ball.style.display = 'none';
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
