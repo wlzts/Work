@@ -1,142 +1,6 @@
 {
-  "records": [
-    {
-      "id": 1765861862948,
-      "title": "给",
-      "content": "给",
-      "tags": [],
-      "project": "",
-      "estimatedTime": null,
-      "actualTime": null,
-      "starred": false,
-      "date": "2025-12-16T05:11:02.948Z",
-      "files": []
-    },
-    {
-      "id": 1765861836644,
-      "title": "g",
-      "content": "&nbsp;f&nbsp;",
-      "tags": [],
-      "project": "",
-      "estimatedTime": null,
-      "actualTime": null,
-      "starred": false,
-      "date": "2025-12-16T05:10:36.644Z",
-      "files": []
-    },
-    {
-      "id": 1765861836372,
-      "title": "g",
-      "content": "&nbsp;f&nbsp;",
-      "tags": [],
-      "project": "",
-      "estimatedTime": null,
-      "actualTime": null,
-      "starred": false,
-      "date": "2025-12-16T05:10:36.372Z",
-      "files": []
-    },
-    {
-      "id": 1765857342226,
-      "title": "sdaf",
-      "content": "",
-      "projectId": "",
-      "tags": [
-        "1765756894183",
-        "1765756907630"
-      ],
-      "files": [],
-      "date": "2025-12-16T03:55:42.226Z",
-      "updateTime": "2025-12-16T03:55:42.226Z"
-    },
-    {
-      "id": 1765857337082,
-      "title": "sdaf",
-      "content": "",
-      "projectId": "",
-      "tags": [
-        "1765756894183",
-        "1765756907630"
-      ],
-      "files": [],
-      "date": "2025-12-16T03:55:37.082Z",
-      "updateTime": "2025-12-16T03:55:37.082Z"
-    },
-    {
-      "id": 1765857336658,
-      "title": "sdaf",
-      "content": "",
-      "projectId": "",
-      "tags": [
-        "1765756894183",
-        "1765756907630"
-      ],
-      "files": [],
-      "date": "2025-12-16T03:55:36.658Z",
-      "updateTime": "2025-12-16T03:55:36.658Z"
-    },
-    {
-      "id": 1765527898779,
-      "title": "阿斯蒂芬",
-      "content": "",
-      "projectId": "",
-      "tags": [],
-      "files": [],
-      "date": "2025-12-12T08:24:58.779Z",
-      "updateTime": "2025-12-12T08:33:31.738Z"
-    },
-    {
-      "id": 1765527898251,
-      "title": "阿斯蒂芬",
-      "content": "阿斯顿f",
-      "projectId": "",
-      "tags": [],
-      "files": [],
-      "date": "2025-12-12T08:24:58.251Z",
-      "updateTime": "2025-12-12T08:24:58.251Z"
-    },
-    {
-      "id": 1765527897282,
-      "title": "阿斯蒂芬",
-      "content": "阿斯顿f",
-      "projectId": "",
-      "tags": [],
-      "files": [],
-      "date": "2025-12-12T08:24:57.283Z",
-      "updateTime": "2025-12-12T08:24:57.283Z"
-    },
-    {
-      "id": 1765527894403,
-      "title": "阿斯蒂芬",
-      "content": "阿斯顿f",
-      "projectId": "",
-      "tags": [],
-      "files": [],
-      "date": "2025-12-12T08:24:54.403Z",
-      "updateTime": "2025-12-12T08:24:54.403Z"
-    },
-    {
-      "id": 1765527548124,
-      "title": "给",
-      "content": "二哥飞洒地方",
-      "projectId": "1765508690593",
-      "tags": [],
-      "files": [],
-      "date": "2025-12-12T08:19:08.124Z",
-      "updateTime": "2025-12-12T08:25:20.043Z"
-    }
-  ],
-  "projects": [
-    {
-      "id": 1765508685730,
-      "name": "发"
-    },
-    {
-      "id": 1765508690593,
-      "name": "的"
-    },
-    "的"
-  ],
+  "records": [],
+  "projects": [],
   "tags": [
     {
       "id": 1765756894183,
@@ -145,9 +9,8 @@
     {
       "id": 1765756907630,
       "name": "打"
-    },
-    "给"
+    }
   ],
-  "syncTime": "2025-12-16T05:25:39.844Z",
+  "syncTime": "2025-12-16T05:59:57.754Z",
   "version": "2.1.0"
 }
