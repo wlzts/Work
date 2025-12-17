@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Work-log 工作记录系统</title>
-
   <style>
     /* 全局样式 - 适配合力企业品牌风格（合力红+蓝色+黄色点缀） */
     * {
@@ -903,111 +902,6 @@
 
 
 
-    /* 文本编辑器样式 */
-    .text-editor {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 15px;
-    }
-
-    .editor-toolbar {
-      background: #f8f9fa;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 15px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .editor-toolbar button {
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      background: white;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .editor-toolbar button:hover {
-      background: #de1f1f;
-      color: white;
-      border-color: #de1f1f;
-    }
-
-    .editor-toolbar button.active {
-      background: #de1f1f;
-      color: white;
-      border-color: #de1f1f;
-    }
-
-    .editor-toolbar .divider {
-      width: 1px;
-      height: 20px;
-      background: #ddd;
-      margin: 0 5px;
-    }
-
-    .editor-content {
-      min-height: 200px;
-      max-height: 400px;
-      overflow-y: auto;
-      padding: 15px;
-      background: white;
-      line-height: 1.6;
-      font-family: 'SimSun', 'Times New Roman', serif;
-      outline: none;
-    }
-
-    .editor-content p {
-      margin: 0 0 10px 0;
-      white-space: pre-wrap;
-    }
-
-    .editor-content .format-body {
-      font-size: 14px;
-      color: black;
-      font-weight: normal;
-    }
-
-    .editor-content .format-title {
-      font-size: 16px;
-      color: black;
-      font-weight: bold;
-    }
-
-    .editor-content .format-note {
-      font-size: 14px;
-      color: red;
-      font-weight: bold;
-    }
-
-    .editor-status {
-      background: #f8f9fa;
-      border-top: 1px solid #ddd;
-      padding: 8px 15px;
-      font-size: 12px;
-      color: #666;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .editor-status .word-count {
-      font-weight: 500;
-    }
-
-    .editor-status .format-indicator {
-      color: #de1f1f;
-      font-weight: 600;
-    }
-
     /* 响应式设计 */
     @media (max-width: 1200px) {
       .records-sidebar {
@@ -1098,27 +992,93 @@
       .day-record-count {
         font-size: 8px;
       }
-      
-      /* 编辑器响应式样式 */
-      .editor-toolbar {
-        padding: 8px 10px;
-      }
-      
-      .editor-toolbar button {
-        padding: 6px 10px;
-        font-size: 11px;
-      }
-      
-      .editor-content {
-        min-height: 150px;
-        max-height: 300px;
-        padding: 10px;
-      }
-      
-      .editor-status {
-        padding: 6px 10px;
-        font-size: 11px;
-      }
+    }
+
+    /* 富文本编辑器样式 */
+    .rich-text-editor {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .editor-toolbar {
+      background: #f8f9fa;
+      border-bottom: 1px solid #ddd;
+      padding: 8px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .editor-toolbar button {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 6px 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      min-width: auto;
+      margin: 0;
+    }
+
+    .editor-toolbar button:hover {
+      background: #de1f1f;
+      color: white;
+      border-color: #de1f1f;
+    }
+
+    .editor-toolbar button.active {
+      background: #de1f1f;
+      color: white;
+      border-color: #de1f1f;
+    }
+
+    .editor-toolbar select {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .editor-content {
+      min-height: 150px;
+      padding: 12px;
+      outline: none;
+      background: white;
+      overflow-y: auto;
+    }
+
+    .editor-content:focus {
+      box-shadow: inset 0 0 0 2px rgba(222, 31, 31, 0.15);
+    }
+
+    /* 标签颜色选择器 */
+    .tag-color-picker {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+
+    .color-option {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.selected {
+      border-color: #2c3e50;
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -1144,6 +1104,9 @@
       <div class="menu-group-title">分类管理</div>
       <button onclick="openProjectManager()">
         <span>📁</span> 项目分类管理
+      </button>
+      <button onclick="openTagManager()">
+        <span>🏷️</span> 标签管理
       </button>
     </div>
 
@@ -1187,6 +1150,10 @@
           <div class="stat-label">项目总数</div>
           <div class="stat-value" id="totalProjects">0</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-label">标签总数</div>
+          <div class="stat-value" id="totalTags">0</div>
+        </div>
       </div>
 
       <!-- 视图切换按钮 -->
@@ -1213,36 +1180,36 @@
               <option value="">选择项目分类</option>
             </select>
           </div>
-
+          <div class="form-group">
+            <label for="tagSelect">标签</label>
+            <select id="tagSelect" multiple="">
+            </select>
+            <small style="color: #7f8c8d;">按住Ctrl键可多选标签</small>
+          </div>
           <div class="form-group">
             <label for="content">记录内容</label>
-            <div class="text-editor">
+            <div class="rich-text-editor">
               <div class="editor-toolbar">
-                <button class="format-btn active" data-format="body" onclick="setEditorFormat('content', 'body')">
-                  <span>📝</span> 正文
-                </button>
-                <button class="format-btn" data-format="title" onclick="setEditorFormat('content', 'title')">
-                  <span>📋</span> 标题
-                </button>
-                <button class="format-btn" data-format="note" onclick="setEditorFormat('content', 'note')">
-                  <span>⚠️</span> 标注
-                </button>
-                <div class="divider"></div>
-                <button onclick="clearEditorFormat('content')">
-                  <span>🧹</span> 清除格式
-                </button>
-                <button onclick="insertLineBreak('content')">
-                  <span>⏎</span> 换行
-                </button>
+                <button onclick="formatText('bold')" title="粗体">B</button>
+                <button onclick="formatText('italic')" title="斜体">I</button>
+                <button onclick="formatText('underline')" title="下划线">U</button>
+                <select onchange="changeFontSize(this.value)" title="字体大小">
+                  <option value="">字体大小</option>
+                  <option value="12px">小</option>
+                  <option value="14px">正常</option>
+                  <option value="16px">大</option>
+                  <option value="18px">较大</option>
+                  <option value="24px">很大</option>
+                </select>
+                <input type="color" onchange="changeTextColor(this.value)" value="#000000" title="字体颜色">
+                <button onclick="formatText('justifyLeft')" title="左对齐">左</button>
+                <button onclick="formatText('justifyCenter')" title="居中">中</button>
+                <button onclick="formatText('justifyRight')" title="右对齐">右</button>
+                <button onclick="clearFormat()" title="清除格式">清除</button>
               </div>
-              <div id="content" class="editor-content" contenteditable="true" oninput="updateEditorStats('content')" onkeydown="handleEditorKeydown(event, 'content')"></div>
-              <div class="editor-status">
-                <span class="word-count">字数：0</span>
-                <span class="format-indicator">当前格式：正文</span>
-              </div>
+              <div class="editor-content" id="content" contenteditable="true" placeholder="请输入详细的工作内容"></div>
             </div>
           </div>
-
           <div class="form-group">
             <label>附件上传</label>
             <div class="file-upload" onclick="document.getElementById('fileInput').click()">
@@ -1298,13 +1265,16 @@
     <div class="records-sidebar-search">
       <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 0 15px 15px; border: 2px solid #e8eaf6;">
         <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-          <input id="searchInput" placeholder="搜索" style="flex: 1; margin-bottom: 0;" onkeypress="if(event.key === 'Enter') performSearch()">
+          <input id="searchInput" placeholder="搜索标题/内容/标签" style="flex: 1; margin-bottom: 0;" onkeypress="if(event.key === 'Enter') performSearch()">
           <button class="btn btn-primary" onclick="performSearch()" style="min-width: 40px; padding: 12px;">
             <span>🔍</span>
           </button>
         </div>
         <select id="projectFilter" onchange="filterRecords()" style="margin-bottom: 10px;">
           <option value="">所有项目</option>
+        </select>
+        <select id="tagFilter" onchange="filterRecords()" style="margin-bottom: 10px;">
+          <option value="">所有标签</option>
         </select>
         <button class="btn btn-secondary" onclick="resetFilters()" style="width: 100%; min-width: auto;">
           <span>🔄</span> 重置筛选
@@ -1337,8 +1307,36 @@
           <option value="">选择项目分类</option>
         </select>
       </div>
-
-
+      <div class="form-group">
+        <label for="editTagSelect">标签</label>
+        <select id="editTagSelect" multiple="">
+        </select>
+        <small style="color: #7f8c8d;">按住Ctrl键可多选标签</small>
+      </div>
+      <div class="form-group">
+        <label for="editContent">记录内容</label>
+        <div class="rich-text-editor">
+          <div class="editor-toolbar">
+            <button onclick="formatText('bold', 'editContent')" title="粗体">B</button>
+            <button onclick="formatText('italic', 'editContent')" title="斜体">I</button>
+            <button onclick="formatText('underline', 'editContent')" title="下划线">U</button>
+            <select onchange="changeFontSize(this.value, 'editContent')" title="字体大小">
+              <option value="">字体大小</option>
+              <option value="12px">小</option>
+              <option value="14px">正常</option>
+              <option value="16px">大</option>
+              <option value="18px">较大</option>
+              <option value="24px">很大</option>
+            </select>
+            <input type="color" onchange="changeTextColor(this.value, 'editContent')" value="#000000" title="字体颜色">
+            <button onclick="formatText('justifyLeft', 'editContent')" title="左对齐">左</button>
+            <button onclick="formatText('justifyCenter', 'editContent')" title="居中">中</button>
+            <button onclick="formatText('justifyRight', 'editContent')" title="右对齐">右</button>
+            <button onclick="clearFormat('editContent')" title="清除格式">清除</button>
+          </div>
+          <div class="editor-content" id="editContent" contenteditable="true" placeholder="请输入详细的工作内容"></div>
+        </div>
+      </div>
       <div class="form-group">
         <label>附件管理</label>
         <div class="file-upload" onclick="document.getElementById('editFileInput').click()">
@@ -1372,36 +1370,36 @@
           <option value="">选择项目分类</option>
         </select>
       </div>
-
+      <div class="form-group">
+        <label for="addDateTagSelect">标签</label>
+        <select id="addDateTagSelect" multiple="">
+        </select>
+        <small style="color: #7f8c8d;">按住Ctrl键可多选标签</small>
+      </div>
       <div class="form-group">
         <label for="addDateContent">记录内容</label>
-        <div class="text-editor">
+        <div class="rich-text-editor">
           <div class="editor-toolbar">
-            <button class="format-btn active" data-format="body" onclick="setEditorFormat('addDateContent', 'body')">
-              <span>📝</span> 正文
-            </button>
-            <button class="format-btn" data-format="title" onclick="setEditorFormat('addDateContent', 'title')">
-              <span>📋</span> 标题
-            </button>
-            <button class="format-btn" data-format="note" onclick="setEditorFormat('addDateContent', 'note')">
-              <span>⚠️</span> 标注
-            </button>
-            <div class="divider"></div>
-            <button onclick="clearEditorFormat('addDateContent')">
-              <span>🧹</span> 清除格式
-            </button>
-            <button onclick="insertLineBreak('addDateContent')">
-              <span>⏎</span> 换行
-            </button>
+            <button onclick="formatText('bold', 'addDateContent')" title="粗体">B</button>
+            <button onclick="formatText('italic', 'addDateContent')" title="斜体">I</button>
+            <button onclick="formatText('underline', 'addDateContent')" title="下划线">U</button>
+            <select onchange="changeFontSize(this.value, 'addDateContent')" title="字体大小">
+              <option value="">字体大小</option>
+              <option value="12px">小</option>
+              <option value="14px">正常</option>
+              <option value="16px">大</option>
+              <option value="18px">较大</option>
+              <option value="24px">很大</option>
+            </select>
+            <input type="color" onchange="changeTextColor(this.value, 'addDateContent')" value="#000000" title="字体颜色">
+            <button onclick="formatText('justifyLeft', 'addDateContent')" title="左对齐">左</button>
+            <button onclick="formatText('justifyCenter', 'addDateContent')" title="居中">中</button>
+            <button onclick="formatText('justifyRight', 'addDateContent')" title="右对齐">右</button>
+            <button onclick="clearFormat('addDateContent')" title="清除格式">清除</button>
           </div>
-          <div id="addDateContent" class="editor-content" contenteditable="true" oninput="updateEditorStats('addDateContent')" onkeydown="handleEditorKeydown(event, 'addDateContent')"></div>
-          <div class="editor-status">
-            <span class="word-count">字数：0</span>
-            <span class="format-indicator">当前格式：正文</span>
-          </div>
+          <div class="editor-content" id="addDateContent" contenteditable="true" placeholder="请输入详细的工作内容"></div>
         </div>
       </div>
-
       <div class="form-group">
         <label>附件上传</label>
         <div class="file-upload" onclick="document.getElementById('addDateFileInput').click()">
@@ -1436,7 +1434,21 @@
     </div>
   </div>
 
-
+  <!-- 标签管理模态框 -->
+  <div id="tagModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">×</span>
+      <h3>标签管理</h3>
+      <div class="form-group">
+        <label for="newTagName">新标签名称 <span style="color:#d32f2f">*</span></label>
+        <input id="newTagName" placeholder="请输入标签名称">
+      </div>
+      <button class="btn btn-primary" onclick="addTag()">
+        <span>✚</span> 添加标签
+      </button>
+      <div id="tagList" style="margin-top: 20px;"></div>
+    </div>
+  </div>
 
   <!-- GitHub设置模态框 -->
   <div id="githubModal" class="modal">
@@ -1485,13 +1497,14 @@
     // 全局数据存储
     let records = JSON.parse(localStorage.getItem('records') || '[]');
     let projects = JSON.parse(localStorage.getItem('projects') || '[]');
-
+    let tags = JSON.parse(localStorage.getItem('tags') || '[]');
     let githubConfig = JSON.parse(localStorage.getItem('githubConfig') || '{}');
     let currentView = 'list';
     let uploadedFiles = [];
     let editUploadedFiles = [];
     let addDateUploadedFiles = [];
     let recordsSidebarCollapsed = false;
+    let selectedTagColor = '#3498db';
     
     // 日历相关变量
     let currentDate = new Date();
@@ -1501,14 +1514,14 @@
     let autoSyncInterval = null;
     const AUTO_SYNC_INTERVAL = 30 * 60 * 1000; // 30分钟
     
-
-    
     // 初始化
     document.addEventListener('DOMContentLoaded', function() {
       renderProjects();
+      renderTags();
       updateStats();
       render();
       showView('list');
+      initTagColorPicker();
       
       // 加载GitHub配置
       loadGitHubConfig();
@@ -1535,137 +1548,67 @@
       initSidebarResizer();
     });
     
-    // 侧边栏拖拽调整功能
-    // ========== 文本编辑器功能 ==========
-    function setEditorFormat(editorId, format) {
-      const editor = document.getElementById(editorId);
-      const selection = window.getSelection();
-      const range = selection.getRangeAt(0);
-      
-      if (range.collapsed) {
-        // 如果没有选中文本，设置输入点的格式
-        editor.setAttribute('data-current-format', format);
-      } else {
-        // 如果选中文本，应用格式到选中的文本
-        const selectedText = range.extractContents();
-        const span = document.createElement('span');
-        span.className = `format-${format}`;
-        span.appendChild(selectedText);
-        range.insertNode(span);
-        
-        // 重新设置选区
-        range.setStartAfter(span);
-        range.setEndAfter(span);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-      
-      // 更新工具栏状态
-      updateEditorToolbar(editorId, format);
-      // 更新状态栏
-      updateEditorStats(editorId);
-    }
-
-    function clearEditorFormat(editorId) {
-      const editor = document.getElementById(editorId);
-      const selection = window.getSelection();
-      const range = selection.getRangeAt(0);
-      
-      if (!range.collapsed) {
-        const selectedText = range.extractContents();
-        const textNode = document.createTextNode(selectedText.textContent || selectedText.innerText || '');
-        range.insertNode(textNode);
-        
-        // 重新设置选区
-        range.setStartAfter(textNode);
-        range.setEndAfter(textNode);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-      
-      // 清除当前格式设置
-      editor.removeAttribute('data-current-format');
-      // 更新工具栏状态
-      updateEditorToolbar(editorId, 'body');
-      // 更新状态栏
-      updateEditorStats(editorId);
-    }
-
-    function insertLineBreak(editorId) {
-      const editor = document.getElementById(editorId);
-      const selection = window.getSelection();
-      const range = selection.getRangeAt(0);
-      
-      const br = document.createElement('br');
-      range.insertNode(br);
-      
-      // 移动光标到换行符后面
-      range.setStartAfter(br);
-      range.setEndAfter(br);
-      selection.removeAllRanges();
-      selection.addRange(range);
-      
-      updateEditorStats(editorId);
-    }
-
-    function handleEditorKeydown(event, editorId) {
-      const editor = document.getElementById(editorId);
-      
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
-        
-        // 创建新段落
-        const p = document.createElement('p');
-        const currentFormat = editor.getAttribute('data-current-format') || 'body';
-        p.className = `format-${currentFormat}`;
-        
-        range.insertNode(p);
-        range.setStart(p, 0);
-        range.setEnd(p, 0);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        
-        updateEditorStats(editorId);
-      }
-    }
-
-    function updateEditorToolbar(editorId, activeFormat) {
-      const toolbar = document.querySelector(`#${editorId}`).parentElement.querySelector('.editor-toolbar');
-      const formatBtns = toolbar.querySelectorAll('.format-btn');
-      
-      formatBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-format') === activeFormat) {
-          btn.classList.add('active');
-        }
+    // 初始化标签颜色选择器
+    function initTagColorPicker() {
+      document.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', function() {
+          document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedTagColor = this.dataset.color;
+        });
       });
     }
 
-    function updateEditorStats(editorId) {
+    // 富文本编辑功能
+    function formatText(command, editorId = 'content') {
       const editor = document.getElementById(editorId);
-      const statusBar = editor.parentElement.querySelector('.editor-status');
-      const wordCountSpan = statusBar.querySelector('.word-count');
-      const formatIndicator = statusBar.querySelector('.format-indicator');
-      
-      // 计算字数（中文和英文都算一个字）
-      const text = editor.textContent || editor.innerText || '';
-      const charCount = text.trim().length;
-      
-      // 获取当前格式
-      const currentFormat = editor.getAttribute('data-current-format') || 'body';
-      const formatNames = {
-        'body': '正文',
-        'title': '标题',
-        'note': '标注'
-      };
-      
-      wordCountSpan.textContent = `字数：${charCount}`;
-      formatIndicator.textContent = `当前格式：${formatNames[currentFormat]}`;
+      if (editor) {
+        document.execCommand(command, false, null);
+        editor.focus();
+      }
     }
 
+    function changeFontSize(size, editorId = 'content') {
+      const editor = document.getElementById(editorId);
+      if (editor && size) {
+        document.execCommand('fontSize', false, '3');
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          if (!range.collapsed) {
+            const span = document.createElement('span');
+            span.style.fontSize = size;
+            try {
+              range.surroundContents(span);
+            } catch (e) {
+              const contents = range.extractContents();
+              span.appendChild(contents);
+              range.insertNode(span);
+            }
+          }
+        }
+      }
+    }
+
+    function changeTextColor(color, editorId = 'content') {
+      const editor = document.getElementById(editorId);
+      if (editor) {
+        document.execCommand('foreColor', false, color);
+        editor.focus();
+      }
+    }
+
+    function clearFormat(editorId = 'content') {
+      const editor = document.getElementById(editorId);
+      if (editor) {
+        document.execCommand('removeFormat', false, null);
+        document.execCommand('clearFontSize', false, null);
+        document.execCommand('foreColor', false, '#000000');
+        editor.focus();
+      }
+    }
+
+    // 侧边栏拖拽调整功能
     function initSidebarResizer() {
       const sidebar = document.getElementById('recordsSidebar');
       const resizer = document.getElementById('sidebarResizer');
@@ -1767,7 +1710,16 @@
       }
     }
 
-
+    function saveTags() {
+      try {
+        localStorage.setItem('tags', JSON.stringify(tags));
+        renderTags();
+        updateStats();
+        showToast('标签已保存', 'success');
+      } catch (error) {
+        showToast('保存失败：' + error.message, 'error');
+      }
+    }
 
     // ========== 统计更新 ==========
     function updateStats() {
@@ -1779,7 +1731,7 @@
       document.getElementById('todayRecords').textContent = todayCount;
       
       document.getElementById('totalProjects').textContent = projects.length;
-
+      document.getElementById('totalTags').textContent = tags.length;
       
       // 更新侧边栏记录数
       document.getElementById('sidebarRecordCount').textContent = `共 ${records.length} 条`;
@@ -1850,16 +1802,16 @@
       }
     }
 
-    // ========== 富文本编辑器初始化 ==========
-
-
     // ========== 记录管理功能 ==========
     function addRecord() {
       const titleInput = document.getElementById('title');
       const title = titleInput.value.trim();
-      const content = document.getElementById('content').innerHTML;
+      const content = document.getElementById('content').innerHTML.trim();
       const projectId = document.getElementById('projectSelect').value;
       
+      const tagSelect = document.getElementById('tagSelect');
+      const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
+
       if (!title) {
         showToast('请输入记录标题！', 'error');
         titleInput.focus();
@@ -1871,6 +1823,7 @@
         title,
         content,
         projectId,
+        tags: selectedTags,
         files: [...uploadedFiles],
         date: new Date().toISOString(),
         updateTime: new Date().toISOString()
@@ -1895,12 +1848,11 @@
       
       // 清空表单
       document.getElementById('addDateTitle').value = '';
+      document.getElementById('addDateContent').value = '';
       document.getElementById('addDateProjectSelect').value = '';
-
+      document.getElementById('addDateTagSelect').selectedIndex = -1;
       document.getElementById('addDateFilePreview').innerHTML = '';
       addDateUploadedFiles = [];
-      
-
       
       setTimeout(() => {
         document.getElementById('addDateTitle').focus();
@@ -1910,10 +1862,13 @@
     function saveRecordForDate() {
       const titleInput = document.getElementById('addDateTitle');
       const title = titleInput.value.trim();
-      const content = document.getElementById('addDateContent').innerHTML;
+      const content = document.getElementById('addDateContent').innerHTML.trim();
       const projectId = document.getElementById('addDateProjectSelect').value;
       const selectedDateStr = document.getElementById('addDateSelectedDate').value;
       
+      const tagSelect = document.getElementById('addDateTagSelect');
+      const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
+
       if (!title) {
         showToast('请输入记录标题！', 'error');
         titleInput.focus();
@@ -1925,6 +1880,7 @@
         title,
         content,
         projectId,
+        tags: selectedTags,
         files: [...addDateUploadedFiles],
         date: selectedDateStr,
         updateTime: new Date().toISOString()
@@ -1945,20 +1901,8 @@
       document.getElementById('title').value = '';
       document.getElementById('content').innerHTML = '';
       document.getElementById('projectSelect').value = '';
-      uploadedFiles = [];
-      document.getElementById('filePreview').innerHTML = '';
-      updateEditorStats('content');
+      document.getElementById('tagSelect').selectedIndex = -1;
       document.getElementById('title').focus();
-    }
-
-    function clearDateForm() {
-      document.getElementById('addDateTitle').value = '';
-      document.getElementById('addDateContent').innerHTML = '';
-      document.getElementById('addDateProjectSelect').value = '';
-      addDateUploadedFiles = [];
-      document.getElementById('addDateFilePreview').innerHTML = '';
-      updateEditorStats('addDateContent');
-      document.getElementById('addDateTitle').focus();
     }
 
     function deleteRecord(id) {
@@ -1989,9 +1933,13 @@
 
       document.getElementById('editRecordId').value = id;
       document.getElementById('editTitle').value = record.title;
+      document.getElementById('editContent').innerHTML = record.content;
       document.getElementById('editProjectSelect').value = record.projectId || '';
       
-
+      const tagSelect = document.getElementById('editTagSelect');
+      Array.from(tagSelect.options).forEach(option => {
+        option.selected = record.tags && record.tags.includes(option.value);
+      });
       
       editUploadedFiles = record.files || [];
       const previewContainer = document.getElementById('editFilePreview');
@@ -2019,8 +1967,6 @@
         previewContainer.appendChild(fileItem);
       });
       
-
-      
       document.getElementById('editModal').style.display = 'flex';
       setTimeout(() => {
         document.getElementById('editTitle').focus();
@@ -2031,10 +1977,11 @@
       const id = parseInt(document.getElementById('editRecordId').value);
       const titleInput = document.getElementById('editTitle');
       const title = titleInput.value.trim();
-      const content = '';
+      const content = document.getElementById('editContent').value.trim();
       const projectId = document.getElementById('editProjectSelect').value;
       
-      const selectedTags = [];
+      const tagSelect = document.getElementById('editTagSelect');
+      const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
 
       if (!title) {
         showToast('请输入记录标题！', 'error');
@@ -2047,39 +1994,23 @@
         records[index] = {
           ...records[index],
           title,
-  
+          content,
           projectId,
-  
+          tags: selectedTags,
           files: [...editUploadedFiles],
           updateTime: new Date().toISOString()
         };
+        saveRecords();
+        render();
         
-        // 使用Promise模拟异步保存过程
-        new Promise((resolve) => {
-          setTimeout(() => {
-            saveRecords();
-            render();
-            
-            // 如果在日历视图中，更新日历和选中日期的记录
-            if (currentView === 'calendar') {
-              renderCalendar();
-              renderSelectedDateRecords();
-            }
-            resolve();
-          }, 300); // 300ms延迟，提供更好的用户体验
-        }).then(() => {
-          // 保存成功后自动关闭修改窗口
-          const editModal = document.getElementById('editModal');
-          editModal.style.opacity = '0';
-          editModal.style.transform = 'translateY(-20px)';
-          
-          // 动画结束后完全隐藏模态框
-          setTimeout(() => {
-            closeModal();
-            // 显示成功提示
-            showToast('记录已更新', 'success');
-          }, 200);
-        });
+        // 如果在日历视图中，更新日历和选中日期的记录
+        if (currentView === 'calendar') {
+          renderCalendar();
+          renderSelectedDateRecords();
+        }
+        
+        closeModal();
+        showToast('记录已更新', 'success');
       } else {
         showToast('记录不存在', 'error');
       }
@@ -2184,7 +2115,107 @@
     }
 
     // ========== 标签管理 ==========
+    function renderTags() {
+      const tagSelect = document.getElementById('tagSelect');
+      const editTagSelect = document.getElementById('editTagSelect');
+      const tagFilter = document.getElementById('tagFilter');
+      const addDateTagSelect = document.getElementById('addDateTagSelect');
+      
+      [tagSelect, editTagSelect, tagFilter, addDateTagSelect].forEach(select => {
+        if (select) {
+          select.innerHTML = '';
+          if (select.id === 'tagFilter') {
+            select.innerHTML = '<option value="">所有标签</option>';
+          }
+          tags.forEach(tag => {
+            const option = document.createElement('option');
+            option.value = tag.id;
+            option.textContent = tag.name;
+            select.appendChild(option);
+          });
+        }
+      });
 
+      const tagList = document.getElementById('tagList');
+      tagList.innerHTML = '';
+      
+      if (tags.length === 0) {
+        tagList.innerHTML = '<div class="empty-state">暂无标签</div>';
+        return;
+      }
+
+      tags.forEach(tag => {
+        const recordCount = records.filter(r => r.tags && r.tags.includes(tag.id.toString())).length;
+        const tagColor = tag.color || '#3498db';
+        
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.style.padding = '10px';
+        div.style.borderBottom = '1px solid #eee';
+        
+        div.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="background-color: ${tagColor}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">${tag.name}</span>
+            <span style="font-size: 12px; color: #7f8c8d;">(${recordCount}条记录)</span>
+          </div>
+          <button class="btn btn-danger" style="padding: 5px 10px;" 
+            onclick="deleteTag(${tag.id})"
+            ${recordCount > 0 ? 'disabled title="该标签下有记录，无法删除"' : ''}>
+            删除
+          </button>
+        `;
+        tagList.appendChild(div);
+      });
+    }
+
+    function openTagManager() {
+      document.getElementById('tagModal').style.display = 'flex';
+      setTimeout(() => {
+        document.getElementById('newTagName').focus();
+      }, 100);
+    }
+
+    function addTag() {
+      const nameInput = document.getElementById('newTagName');
+      const name = nameInput.value.trim();
+      
+      if (!name) {
+        showToast('请输入标签名称！', 'error');
+        nameInput.focus();
+        return;
+      }
+      
+      if (tags.some(t => t.name.toLowerCase() === name.toLowerCase())) {
+        showToast('该标签名称已存在！', 'error');
+        nameInput.focus();
+        return;
+      }
+
+      tags.push({
+        id: Date.now(),
+        name,
+        color: selectedTagColor
+      });
+      
+      saveTags();
+      nameInput.value = '';
+      nameInput.focus();
+    }
+
+    function deleteTag(id) {
+      const hasRecords = records.some(r => r.tags && r.tags.includes(id.toString()));
+      if (hasRecords) {
+        showToast('该标签下有记录，无法删除！', 'error');
+        return;
+      }
+      
+      if (confirm('确定要删除这个标签吗？')) {
+        tags = tags.filter(t => t.id !== id);
+        saveTags();
+      }
+    }
 
     // ========== 视图切换功能 ==========
     function showView(type) {
@@ -2215,13 +2246,6 @@
       if (type === 'calendar') {
         renderCalendar();
       } else {
-        // 初始化富文本编辑器
-        if (editor) {
-          destroyEditor(editor);
-        }
-        setTimeout(() => {
-          editor = initEditor('#content');
-        }, 100);
         filterRecords();
       }
     }
@@ -2264,7 +2288,12 @@
       // 搜索文本筛选
       if (searchText) {
         filtered = filtered.filter(r => 
-          r.title.toLowerCase().includes(searchText)
+          r.title.toLowerCase().includes(searchText) || 
+          r.content.toLowerCase().includes(searchText) ||
+          (r.tags && r.tags.some(tagId => {
+            const tag = tags.find(t => t.id.toString() === tagId);
+            return tag && tag.name.toLowerCase().includes(searchText);
+          }))
         );
       }
 
@@ -2273,7 +2302,10 @@
         filtered = filtered.filter(r => r.projectId === projectFilter);
       }
 
-
+      // 标签筛选
+      if (tagFilter) {
+        filtered = filtered.filter(r => r.tags && r.tags.includes(tagFilter));
+      }
 
       // 按时间倒序排序
       filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -2284,7 +2316,7 @@
     function resetFilters() {
       document.getElementById('searchInput').value = '';
       document.getElementById('projectFilter').value = '';
-
+      document.getElementById('tagFilter').value = '';
       filterRecords();
       showToast('筛选条件已重置', 'info');
     }
@@ -2323,10 +2355,13 @@
 
       box.innerHTML = '';
       list.forEach(r => {
-        const project = projects.find(p => p.id == r.projectId);
+        const project = projects.find(p => p.id === r.projectId);
         const projectName = project ? project.name : '未分类';
         
-        const tagNames = [];
+        const tagNames = (r.tags || []).map(tagId => {
+          const tag = tags.find(t => t.id.toString() === tagId);
+          return tag ? tag.name : '';
+        }).filter(name => name);
         
         const div = document.createElement('div');
         div.className = 'record';
@@ -2381,8 +2416,16 @@
           </h4>
           <div class="record-meta">
             <span class="tag tag-project">${projectName}</span>
+            ${r.tags ? r.tags.map(tagId => {
+              const tag = tags.find(t => t.id.toString() === tagId);
+              const tagColor = tag ? (tag.color || '#3498db') : '#3498db';
+              const tagName = tag ? tag.name : '未知标签';
+              return `<span class="tag" style="background-color: ${tagColor}; border-color: ${tagColor};">${tagName}</span>`;
+            }).join('') : ''}
           </div>
-
+          <div style="margin:10px 0; color:#555; line-height: 1.8;">
+            ${r.content ? r.content.substring(0, 100) + (r.content.length > 100 ? '...' : '') : '<span style="color:#999;">无内容</span>'}
+          </div>
           ${filesHtml}
           <div class="record-meta">
             <span>创建时间: ${createTime}</span>
@@ -2566,10 +2609,13 @@
       
       recordsContainer.innerHTML = '';
       dayRecords.forEach(r => {
-        const project = projects.find(p => p.id == r.projectId);
+        const project = projects.find(p => p.id === r.projectId);
         const projectName = project ? project.name : '未分类';
         
-        const tagNames = [];
+        const tagNames = (r.tags || []).map(tagId => {
+          const tag = tags.find(t => t.id.toString() === tagId);
+          return tag ? tag.name : '';
+        }).filter(name => name);
         
         const div = document.createElement('div');
         div.className = 'record';
@@ -2621,8 +2667,16 @@
           </h4>
           <div class="record-meta">
             <span class="tag tag-project">${projectName}</span>
+            ${r.tags ? r.tags.map(tagId => {
+              const tag = tags.find(t => t.id.toString() === tagId);
+              const tagColor = tag ? (tag.color || '#3498db') : '#3498db';
+              const tagName = tag ? tag.name : '未知标签';
+              return `<span class="tag" style="background-color: ${tagColor}; border-color: ${tagColor};">${tagName}</span>`;
+            }).join('') : ''}
           </div>
-
+          <div style="margin:10px 0; color:#555; line-height: 1.8;">
+            ${r.content || '<span style="color:#999;">无内容</span>'}
+          </div>
           ${filesHtml}
           ${updateTime ? `<div class="record-meta"><span>更新时间: ${updateTime}</span></div>` : ''}
           <div style="margin-top:15px;">
@@ -2646,8 +2700,6 @@
       document.getElementById('projectModal').style.display = 'none';
       document.getElementById('tagModal').style.display = 'none';
       document.getElementById('githubModal').style.display = 'none';
-      
-
       
       editUploadedFiles = [];
       addDateUploadedFiles = [];
@@ -2718,7 +2770,7 @@
         const syncData = {
           records,
           projects,
-
+          tags,
           syncTime: new Date().toISOString(),
           version: '2.1.0'
         };
@@ -2742,7 +2794,7 @@
           },
           body: JSON.stringify({
             message: `Work log backup - ${new Date().toLocaleString()}`,
-    
+            content,
             sha
           })
         });
@@ -2806,7 +2858,7 @@
 
         records = syncData.records || [];
         projects = syncData.projects || [];
-
+        tags = syncData.tags || [];
         
         saveRecords();
         saveProjects();
@@ -2839,7 +2891,7 @@
         const exportData = {
           records,
           projects,
-
+          tags,
           exportTime: new Date().toISOString(),
           version: '2.1.0'
         };
@@ -2885,7 +2937,7 @@
             if (confirm('⚠️ 导入会覆盖现有数据，确定要继续吗？')) {
               records = importedData.records || [];
               projects = importedData.projects || [];
-
+              tags = importedData.tags || [];
               
               saveRecords();
               saveProjects();
